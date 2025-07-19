@@ -7,6 +7,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import java.io.File;
 import java.util.List;
 
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
@@ -27,9 +28,15 @@ public class GenerateMojo extends AbstractMojo {
 
         EntityGenRunner entityGenRunner = new EntityGenRunner(springConfigPath, activeProfile);
         List<Schema> schemas = entityGenRunner.generate();
-        schemas.forEach(schema -> {
-            getLog().info("EntityGen Schema: " + schema);
-        });
+        Schema schema = schemas.getLast();
+        getLog().info(schema.toString());
+
+        EntityTemplateRunner entityTemplateRunner = new EntityTemplateRunner();
+        try {
+            entityTemplateRunner.generateEntity(schemas.getLast().getTables().getFirst(), basePackage, new File("/Users/leonknezevic/Documents/WebAppsJava/Lab10/backend/src/main/java/hr/tvz/knezevic/njamapp"));
+        } catch (Exception e) {
+            getLog().error(e.getMessage());
+        }
 
         getLog().info("EntityGen done.");
     }
