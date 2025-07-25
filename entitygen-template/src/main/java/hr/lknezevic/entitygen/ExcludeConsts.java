@@ -3,6 +3,7 @@ package hr.lknezevic.entitygen;
 import java.util.List;
 
 public class ExcludeConsts {
+
     public static final List<String> TYPES_WITHOUT_LENGTH = List.of(
             "Integer",
             "int",

@@ -2,12 +2,14 @@ package hr.lknezevic.entitygen.model.template;
 
 import hr.lknezevic.entitygen.enums.CascadeType;
 import hr.lknezevic.entitygen.enums.CollectionType;
+import hr.lknezevic.entitygen.enums.FetchType;
 import hr.lknezevic.entitygen.enums.RelationType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -22,18 +24,26 @@ public class Relation {
     private boolean bidirectional;
     private String mappedBy;
 
-    private boolean orphanRemoval;
+    private Boolean orphanRemoval;
     private CascadeType cascadeType;
+    private FetchType fetchType;
     private Boolean optional;               // za @ManyToOne, @OneToOne
 
     private CollectionType collectionType;  // za OneToMany / ManyToMany
 
-    private String joinColumnName;          // FK u ovoj tablici
-    private String referencedColumnName;    // PK u target tablici
+    // Za JOIN
+    @Builder.Default
+    private List<String> joinColumns = new ArrayList<>(); // lokalne kolone
+    @Builder.Default
+    private List<String> referencedColumns = new ArrayList<>();        // strane kolone
 
-    private String joinTableName;           // za ManyToMany
-    private String inverseJoinColumnName;   // za ManyToMany
-    private String inverseReferencedColumnName;
+    // Za ManyToMany
+    private String joinTableName;
 
-    private List<JoinColumn> joinColumns; // podrška za composite FK
+    @Builder.Default
+    private List<String> inverseJoinColumns = new ArrayList<>();
+    @Builder.Default
+    private List<String> inverseReferencedColumns = new ArrayList<>();
+
+    private String mapsId; // null ako ne treba MapsId, inače ime polja u embedded id klasi
 }

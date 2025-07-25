@@ -33,7 +33,7 @@ public class GenerateMojo extends AbstractMojo {
 
         EntityTemplateRunner entityTemplateRunner = new EntityTemplateRunner();
         try {
-            entityTemplateRunner.generateEntity(schemas.getLast().getTables().getFirst(), basePackage, new File("/Users/leonknezevic/Documents/WebAppsJava/Lab10/backend/src/main/java/hr/tvz/knezevic/njamapp"));
+            entityTemplateRunner.generateEntities(schemas.getLast().getTables(), basePackage, new File("/Users/leonknezevic/Documents/WebAppsJava/Lab10/backend/src/main/java/hr/tvz/knezevic/njamapp"));
         } catch (Exception e) {
             getLog().error(e.getMessage());
         }

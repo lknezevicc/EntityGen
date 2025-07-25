@@ -15,7 +15,14 @@ public class Table {
     private String schema;
     private String catalog;
 
+    @Builder.Default
     private List<Column> columns = new ArrayList<>();
+    @Builder.Default
     private List<ForeignKey> foreignKeys = new ArrayList<>();
+    @Builder.Default
     private List<UniqueConstraint> uniqueConstraints = new ArrayList<>();
+
+    public List<String> getPrimaryKeys() {
+        return columns.stream().filter(Column::isPrimaryKey).map(Column::getName).toList();
+    }
 }

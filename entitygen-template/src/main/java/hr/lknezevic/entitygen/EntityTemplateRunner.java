@@ -8,6 +8,7 @@ import hr.lknezevic.entitygen.mapper.DefaultEntityModelMapper;
 import hr.lknezevic.entitygen.mapper.EntityModelMapper;
 import hr.lknezevic.entitygen.model.Table;
 import hr.lknezevic.entitygen.model.template.Entity;
+import hr.lknezevic.entitygen.model.template.Relation;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -26,21 +27,36 @@ public class EntityTemplateRunner {
         cfg.setClassLoaderForTemplateLoading(getClass().getClassLoader(), "");
         cfg.setDefaultEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+        cfg.setWhitespaceStripping(true);
     }
 
-    public void generateEntity(Table table, String packageName, File outputDir) throws IOException {
+    public void generateEntities(List<Table> tables, String packageName, File outputDir) throws IOException {
         Template entityTemplate = cfg.getTemplate("entity.ftl");
         Template embeddedTemplate = cfg.getTemplate("embeddable.ftl");
 
         EntityModelMapper entityModelMapper = new DefaultEntityModelMapper();
-        List<Entity> entities = entityModelMapper.mapEntities(List.of(table));
+        RelationResolver relationResolver = new DefaultRelationResolver();
 
+        List<Entity> entities = entityModelMapper.mapEntities(tables);
+
+        for(int i = 0; i < tables.size(); i++) {
+            Table table = tables.get(i);
+            Entity entity = entities.get(i);
+            List<Relation> relations = relationResolver.buildRelations(table, tables, entities);
+            entity.setRelations(relations);
+        }
+
+        // ... generiranje Freemarker templatea ...
+
+
+        // 3. Generiraj fileove
         for (Entity entity : entities) {
             Map<String, Object> data = new HashMap<>();
             data.put("noLength", ExcludeConsts.TYPES_WITHOUT_LENGTH);
             data.put("packageName", packageName);
             data.put("entity", entity);
 
+            // Embedded ID (ako postoji)
             if (entity.isHasCompositeKey()) {
                 File outEmbeddedFile = new File(outputDir, entity.getEmbeddedId().getClassName() + JAVA_EXTENSION);
                 try (Writer out = new FileWriter(outEmbeddedFile)) {
@@ -50,6 +66,7 @@ public class EntityTemplateRunner {
                 }
             }
 
+            // Entitet
             File outEntityFile = new File(outputDir, entity.getClassName() + JAVA_EXTENSION);
             try (Writer out = new FileWriter(outEntityFile)) {
                 entityTemplate.process(data, out);

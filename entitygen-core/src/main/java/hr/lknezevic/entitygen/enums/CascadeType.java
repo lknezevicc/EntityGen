@@ -6,5 +6,6 @@ public enum CascadeType {
     MERGE,
     REMOVE,
     REFRESH,
-    DETACH
+    DETACH,
+    NONE
 }

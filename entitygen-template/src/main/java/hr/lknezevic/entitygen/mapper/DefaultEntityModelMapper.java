@@ -1,15 +1,12 @@
 package hr.lknezevic.entitygen.mapper;
 
 import hr.lknezevic.entitygen.model.Column;
-import hr.lknezevic.entitygen.model.ForeignKey;
 import hr.lknezevic.entitygen.model.Table;
 import hr.lknezevic.entitygen.model.template.EmbeddedId;
 import hr.lknezevic.entitygen.model.template.Entity;
 import hr.lknezevic.entitygen.model.template.Field;
-import hr.lknezevic.entitygen.model.template.Relation;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class DefaultEntityModelMapper implements EntityModelMapper {
@@ -23,34 +20,31 @@ public class DefaultEntityModelMapper implements EntityModelMapper {
                     .map(this::mapColumnToField)
                     .toList();
 
-            boolean isComposite = checkCompositeKey(fields);
-            EmbeddedId embeddedId = isComposite ?
-                    buildEmbeddedId(table.getName(), fields) : null;
-
-            List<Relation> relations = buildRelations(table.getForeignKeys());
+            boolean hasCompositeKey = checkCompositeKey(fields);
+            EmbeddedId embeddedId = hasCompositeKey
+                    ? buildEmbeddedId(table.getName(), fields)
+                    : null;
 
             Entity entity = Entity.builder()
-                    .className(table.getName()) // TODO implement PascalCase (NameUtils)
+                    .className(toPascalCase(table.getName()))
                     .tableName(table.getName())
                     .schema(table.getSchema())
                     .catalog(table.getCatalog())
                     .fields(fields)
-                    .hasCompositeKey(isComposite)
+                    .hasCompositeKey(hasCompositeKey)
                     .embeddedId(embeddedId)
-                    .relations(relations)
                     .uniqueConstraints(table.getUniqueConstraints())
                     .build();
 
             entities.add(entity);
         }
 
-
         return entities;
     }
 
     private Field mapColumnToField(Column column) {
         return Field.builder()
-                .name(column.getName())
+                .name(toCamelCase(column.getName()))
                 .columnName(column.getName())
                 .javaType(column.getJavaType())
                 .length(column.getLength())
@@ -70,20 +64,37 @@ public class DefaultEntityModelMapper implements EntityModelMapper {
         return fields.stream().filter(Field::isPrimaryKey).count() > 1;
     }
 
-    private EmbeddedId buildEmbeddedId(String className, List<Field> fields) {
+    private EmbeddedId buildEmbeddedId(String tableName, List<Field> fields) {
         List<Field> pkFields = fields.stream()
                 .filter(Field::isPrimaryKey)
                 .toList();
 
         return EmbeddedId.builder()
-                .className(className + "Id")
+                .className(toPascalCase(tableName) + "Id")
                 .fields(pkFields)
                 .build();
     }
 
-    private List<Relation> buildRelations(List<ForeignKey> fks) {
-        // implementirati kasnije (ili odmah ako imaš ForeignKey model)
-        return Collections.emptyList();
+    // Utility: Pretvaranje npr. "user_account" u "UserAccount"
+    private String toPascalCase(String input) {
+        String[] parts = input.split("_");
+        StringBuilder sb = new StringBuilder();
+        for (String part : parts) {
+            if (part.isEmpty()) continue;
+            sb.append(Character.toUpperCase(part.charAt(0)));
+            if (part.length() > 1) {
+                sb.append(part.substring(1).toLowerCase());
+            }
+        }
+        return sb.toString();
+    }
+
+    // Utility: Pretvaranje npr. "first_name" u "firstName"
+    private String toCamelCase(String input) {
+        String pascal = toPascalCase(input);
+        return pascal.isEmpty()
+                ? pascal
+                : Character.toLowerCase(pascal.charAt(0)) + pascal.substring(1);
     }
 
 }
