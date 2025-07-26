@@ -1,5 +1,6 @@
 package hr.lknezevic.entitygen.mapper;
 
+import hr.lknezevic.entitygen.helper.NamingHelper;
 import hr.lknezevic.entitygen.model.Column;
 import hr.lknezevic.entitygen.model.Table;
 import hr.lknezevic.entitygen.model.template.EmbeddedId;
@@ -26,7 +27,7 @@ public class DefaultEntityModelMapper implements EntityModelMapper {
                     : null;
 
             Entity entity = Entity.builder()
-                    .className(toPascalCase(table.getName()))
+                    .className(NamingHelper.toCamelCase(table.getName()))
                     .tableName(table.getName())
                     .schema(table.getSchema())
                     .catalog(table.getCatalog())
@@ -44,7 +45,7 @@ public class DefaultEntityModelMapper implements EntityModelMapper {
 
     private Field mapColumnToField(Column column) {
         return Field.builder()
-                .name(toCamelCase(column.getName()))
+                .name(NamingHelper.toCamelCase(column.getName()))
                 .columnName(column.getName())
                 .javaType(column.getJavaType())
                 .length(column.getLength())
@@ -70,31 +71,9 @@ public class DefaultEntityModelMapper implements EntityModelMapper {
                 .toList();
 
         return EmbeddedId.builder()
-                .className(toPascalCase(tableName) + "Id")
+                .className(NamingHelper.generateEmbeddableClassName(tableName))
                 .fields(pkFields)
                 .build();
-    }
-
-    // Utility: Pretvaranje npr. "user_account" u "UserAccount"
-    private String toPascalCase(String input) {
-        String[] parts = input.split("_");
-        StringBuilder sb = new StringBuilder();
-        for (String part : parts) {
-            if (part.isEmpty()) continue;
-            sb.append(Character.toUpperCase(part.charAt(0)));
-            if (part.length() > 1) {
-                sb.append(part.substring(1).toLowerCase());
-            }
-        }
-        return sb.toString();
-    }
-
-    // Utility: Pretvaranje npr. "first_name" u "firstName"
-    private String toCamelCase(String input) {
-        String pascal = toPascalCase(input);
-        return pascal.isEmpty()
-                ? pascal
-                : Character.toLowerCase(pascal.charAt(0)) + pascal.substring(1);
     }
 
 }

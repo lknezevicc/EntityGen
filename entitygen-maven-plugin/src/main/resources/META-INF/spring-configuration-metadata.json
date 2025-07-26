@@ -1,0 +1,25 @@
+{
+  "properties": [
+    {
+      "name": "entitygen.relation.enable-bidirectional",
+      "type": "java.lang.Boolean",
+      "description": "Enable generation of bidirectional relationships",
+      "defaultValue": true
+    },
+    {
+      "name": "entitygen.relation.default-fetch-type",
+      "type": "hr.lknezevic.entitygen.enums.FetchType",
+      "description": "Default fetch type for relations",
+      "defaultValue": "LAZY"
+    }
+  ],
+  "hints": [
+    {
+      "name": "entitygen.relation.default-fetch-type",
+      "values": [
+        {"value": "LAZY", "description": "Lazy loading"},
+        {"value": "EAGER", "description": "Eager loading"}
+      ]
+    }
+  ]
+}

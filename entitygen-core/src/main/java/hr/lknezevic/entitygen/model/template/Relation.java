@@ -24,10 +24,12 @@ public class Relation {
     private boolean bidirectional;
     private String mappedBy;
 
-    private Boolean orphanRemoval;
+    @Builder.Default
+    private Boolean orphanRemoval = false;
     private CascadeType cascadeType;
     private FetchType fetchType;
-    private Boolean optional;               // za @ManyToOne, @OneToOne
+    @Builder.Default
+    private Boolean optional = true;               // za @ManyToOne, @OneToOne
 
     private CollectionType collectionType;  // za OneToMany / ManyToMany
 

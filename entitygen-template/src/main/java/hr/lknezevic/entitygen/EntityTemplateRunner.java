@@ -4,6 +4,7 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
+import hr.lknezevic.entitygen.helper.RelationContext;
 import hr.lknezevic.entitygen.mapper.DefaultEntityModelMapper;
 import hr.lknezevic.entitygen.mapper.EntityModelMapper;
 import hr.lknezevic.entitygen.model.Table;
@@ -35,14 +36,15 @@ public class EntityTemplateRunner {
         Template embeddedTemplate = cfg.getTemplate("embeddable.ftl");
 
         EntityModelMapper entityModelMapper = new DefaultEntityModelMapper();
-        RelationResolver relationResolver = new DefaultRelationResolver();
+        RelationBuilder relationBuilder = new RelationBuilder();
 
         List<Entity> entities = entityModelMapper.mapEntities(tables);
+        RelationContext relationContext = new RelationContext(tables, entities);
 
         for(int i = 0; i < tables.size(); i++) {
             Table table = tables.get(i);
             Entity entity = entities.get(i);
-            List<Relation> relations = relationResolver.buildRelations(table, tables, entities);
+            List<Relation> relations = relationBuilder.buildRelations(table, tables, entities);
             entity.setRelations(relations);
         }
 
