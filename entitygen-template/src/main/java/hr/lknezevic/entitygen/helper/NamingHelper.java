@@ -1,5 +1,7 @@
 package hr.lknezevic.entitygen.helper;
 
+import hr.lknezevic.entitygen.enums.RelationType;
+
 /**
  * Helper klasa za imenovanje polja i klasa u relacijama
  */
@@ -39,31 +41,30 @@ public class NamingHelper {
     }
     
     /**
-     * Generiraj naziv polja za relaciju na temelju naziva target entiteta
+     * Generiraj pametan naziv polja za relaciju na temelju naziva target entiteta i relation type
+     * Ovo je glavna metoda za generiranje field name-a
      */
     public static String generateFieldName(String targetEntityClass, String relationType, boolean isCollection) {
         String baseName = toCamelCase(targetEntityClass);
         
-        if (isCollection) {
-            // Za kolekcije dodaj suffix
-            return baseName + "List";
+        if (!isCollection) {
+            return baseName;
         }
         
-        return baseName;
+        // Za kolekcije, koristi pametan suffix ovisno o relation type
+        return switch (relationType.toUpperCase()) {
+            case "MANY_TO_MANY" -> baseName + "Set";        // SET je bolji za M2M zbog unique nature
+            case "MANY_TO_MANY_DIRECT" -> baseName + "Set"; // Direktni M2M također koristi SET
+            case "ONE_TO_MANY" -> baseName + "List";        // LIST je standard za 1:M
+            default -> baseName + "List";                   // Default fallback
+        };
     }
     
     /**
-     * Generiraj naziv polja za inverznu relaciju
+     * Generiraj naziv polja za relaciju na temelju RelationType enuma (type-safe verzija)
      */
-    public static String generateInverseFieldName(String sourceEntityClass, String targetEntityClass, String relationType) {
-        String baseName = toCamelCase(sourceEntityClass);
-        
-        // Za ONE_TO_MANY uvijek je lista
-        if ("ONE_TO_MANY".equals(relationType)) {
-            return baseName + "List";
-        }
-        
-        return baseName;
+    public static String generateFieldName(String targetEntityClass, RelationType relationType, boolean isCollection) {
+        return generateFieldName(targetEntityClass, relationType.name(), isCollection);
     }
     
     /**

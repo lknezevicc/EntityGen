@@ -5,8 +5,10 @@ import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class YamlConnectionProvider extends AbstractConnectionProvider {
     private final SpringConfig springConfig;
@@ -16,8 +18,8 @@ public class YamlConnectionProvider extends AbstractConnectionProvider {
         Constructor constructor = new Constructor(SpringConfig.class, options);
         Yaml yaml = new Yaml(constructor);
 
-        try (FileInputStream fis = new FileInputStream(yamlFile)) {
-            springConfig = yaml.load(fis);
+        try (InputStream is = Files.newInputStream(Path.of(yamlFile))) {
+            springConfig = yaml.load(is);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load properties from " + yamlFile, e);
         }

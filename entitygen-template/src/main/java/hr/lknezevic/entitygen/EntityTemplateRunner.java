@@ -1,80 +1,77 @@
 package hr.lknezevic.entitygen;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import freemarker.template.TemplateExceptionHandler;
+import hr.lknezevic.entitygen.builder.RelationBuilder;
+import hr.lknezevic.entitygen.config.UserConfig;
 import hr.lknezevic.entitygen.helper.RelationContext;
+import hr.lknezevic.entitygen.helper.TemplateRunnerHelper;
 import hr.lknezevic.entitygen.mapper.DefaultEntityModelMapper;
 import hr.lknezevic.entitygen.mapper.EntityModelMapper;
 import hr.lknezevic.entitygen.model.Table;
 import hr.lknezevic.entitygen.model.template.Entity;
 import hr.lknezevic.entitygen.model.template.Relation;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Class for generating JPA entities and related classes from database tables.
+ * <p>
+ * This class orchestrates the entire code generation process:
+ * <ul>
+ *   <li>Converts database tables to entity models</li>
+ *   <li>Builds JPA relationships from foreign keys</li>
+ *   <li>Generates Java files using FreeMarker templates</li>
+ * </ul>
+ * <p>
+ * 
+ * @author Leon Knežević
+ */
+@Slf4j
 public class EntityTemplateRunner {
-    private final static String JAVA_EXTENSION = ".java";
-    private final Configuration cfg;
+    private final List<Table> tables;
+    private final TemplateRunnerHelper templateRunnerHelper;
+    private final EntityModelMapper entityModelMapper;
 
-    public EntityTemplateRunner() {
-        cfg = new Configuration(Configuration.VERSION_2_3_32);
-        cfg.setClassLoaderForTemplateLoading(getClass().getClassLoader(), "");
-        cfg.setDefaultEncoding("UTF-8");
-        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-        cfg.setWhitespaceStripping(true);
+    public EntityTemplateRunner(@NonNull List<Table> tables, @NonNull UserConfig userConfig) {
+        this.tables = tables;
+        this.templateRunnerHelper = new TemplateRunnerHelper(userConfig);
+        this.entityModelMapper = new DefaultEntityModelMapper(userConfig);
     }
 
-    public void generateEntities(List<Table> tables, String packageName, File outputDir) throws IOException {
-        Template entityTemplate = cfg.getTemplate("entity.ftl");
-        Template embeddedTemplate = cfg.getTemplate("embeddable.ftl");
-
-        EntityModelMapper entityModelMapper = new DefaultEntityModelMapper();
-        RelationBuilder relationBuilder = new RelationBuilder();
-
+    /**
+     * Generates all configured components for the provided tables.
+     * Generated components depend on {@link UserConfig} settings. By default, only entities
+     * and repositories are generated.
+     */
+    public void generateComponents() {
         List<Entity> entities = entityModelMapper.mapEntities(tables);
         RelationContext relationContext = new RelationContext(tables, entities);
+        RelationBuilder relationBuilder = new RelationBuilder(relationContext);
 
-        for(int i = 0; i < tables.size(); i++) {
-            Table table = tables.get(i);
-            Entity entity = entities.get(i);
-            List<Relation> relations = relationBuilder.buildRelations(table, tables, entities);
-            entity.setRelations(relations);
+        for (Table table : tables) {
+            List<Relation> relations = relationBuilder.forTable(table).buildRelations();
+
+            relationContext.getEntityByTableName()
+                    .get(table.getName())
+                    .setRelations(relations);
         }
 
-        // ... generiranje Freemarker templatea ...
+        Map<String, Entity> entityByClassName = new HashMap<>();
+        entityByClassName.putAll(relationContext.getEntityByTableName().values().stream()
+                .collect(java.util.stream.Collectors.toMap(
+                        Entity::getClassName,
+                        e -> e,
+                        (existing, replacement) -> existing
+                )));
 
 
-        // 3. Generiraj fileove
-        for (Entity entity : entities) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("noLength", ExcludeConsts.TYPES_WITHOUT_LENGTH);
-            data.put("packageName", packageName);
-            data.put("entity", entity);
+        log.info("Entiteti {}", relationContext.getAllEntities());
 
-            // Embedded ID (ako postoji)
-            if (entity.isHasCompositeKey()) {
-                File outEmbeddedFile = new File(outputDir, entity.getEmbeddedId().getClassName() + JAVA_EXTENSION);
-                try (Writer out = new FileWriter(outEmbeddedFile)) {
-                    embeddedTemplate.process(data, out);
-                } catch (TemplateException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            // Entitet
-            File outEntityFile = new File(outputDir, entity.getClassName() + JAVA_EXTENSION);
-            try (Writer out = new FileWriter(outEntityFile)) {
-                entityTemplate.process(data, out);
-            } catch (TemplateException e) {
-                throw new RuntimeException(e);
-            }
+        for (Entity entity : relationContext.getAllEntities()) {
+            templateRunnerHelper.generateComponents(entity, entityByClassName);
         }
     }
 }

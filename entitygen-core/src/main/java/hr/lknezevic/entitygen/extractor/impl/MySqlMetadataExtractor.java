@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.*;
 
 
@@ -127,9 +128,22 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
 
                 int dataType = rs.getInt("DATA_TYPE");
 
-                int length = rs.getInt("COLUMN_SIZE");
-                int precision = rs.getInt("COLUMN_SIZE");
+                int columnSize = rs.getInt("COLUMN_SIZE");
                 int scale = rs.getInt("DECIMAL_DIGITS");
+                
+                // Determine length vs precision based on data type
+                Integer length = null;
+                Integer precision = null;
+                
+                // String types use length
+                if (dataType == Types.VARCHAR || dataType == Types.CHAR || 
+                    dataType == Types.LONGVARCHAR || dataType == Types.CLOB) {
+                    length = columnSize > 0 ? columnSize : null;
+                }
+                // Numeric types use precision
+                else if (dataType == Types.NUMERIC || dataType == Types.DECIMAL) {
+                    precision = columnSize > 0 ? columnSize : null;
+                }
 
                 Column column = Column.builder()
                         .name(columnName)
@@ -141,10 +155,13 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
                         .unique(uniqueColumns.contains(columnName))
                         .defaultValue(rs.getString("COLUMN_DEF"))
                         .comment(rs.getString("REMARKS"))
-                        .length(length > 0 ? length : null)
-                        .precision(precision > 0 ? precision : null)
+                        .length(length)
+                        .precision(precision)
                         .scale(scale > 0 ? scale : null)
                         .javaType(resolveJavaType(dataType))
+                        .isLob(isLobType(dataType) || "TEXT".equalsIgnoreCase(rs.getString("TYPE_NAME")) || 
+                               "LONGTEXT".equalsIgnoreCase(rs.getString("TYPE_NAME")) || 
+                               "MEDIUMTEXT".equalsIgnoreCase(rs.getString("TYPE_NAME")))
                         .build();
 
                 columns.add(column);

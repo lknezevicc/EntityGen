@@ -33,6 +33,10 @@ public interface MetadataExtractor {
         };
     }
 
+    default boolean isLobType(int dataType) {
+        return dataType == Types.CLOB || dataType == Types.LONGVARCHAR;
+    }
+
     default String resolveAction(short rule) {
         return switch (rule) {
             case DatabaseMetaData.importedKeyCascade -> "CASCADE";

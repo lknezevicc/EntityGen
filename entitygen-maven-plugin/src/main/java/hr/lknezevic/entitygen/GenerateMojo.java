@@ -1,5 +1,7 @@
 package hr.lknezevic.entitygen;
 
+import hr.lknezevic.entitygen.config.UserConfig;
+import hr.lknezevic.entitygen.config.UserConfigProperties;
 import hr.lknezevic.entitygen.model.Schema;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -7,7 +9,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
@@ -26,17 +28,19 @@ public class GenerateMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException {
         getLog().info("EntityGen running...");
 
+        UserConfig userConfig = UserConfig.builder().build();
+        try {
+            userConfig = new UserConfigProperties(springConfigPath, basePackage).createUserConfig();
+        } catch (IOException e) {
+            getLog().error("Failed to load properties from " + springConfigPath, e);
+            getLog().info("Using default properties");
+        }
+
         EntityGenRunner entityGenRunner = new EntityGenRunner(springConfigPath, activeProfile);
         List<Schema> schemas = entityGenRunner.generate();
-        Schema schema = schemas.getLast();
-        getLog().info(schema.toString());
 
-        EntityTemplateRunner entityTemplateRunner = new EntityTemplateRunner();
-        try {
-            entityTemplateRunner.generateEntities(schemas.getLast().getTables(), basePackage, new File("/Users/leonknezevic/Documents/WebAppsJava/Lab10/backend/src/main/java/hr/tvz/knezevic/njamapp"));
-        } catch (Exception e) {
-            getLog().error(e.getMessage());
-        }
+        EntityTemplateRunner entityTemplateRunner = new EntityTemplateRunner(schemas.getLast().getTables(), userConfig);
+        entityTemplateRunner.generateComponents();
 
         getLog().info("EntityGen done.");
     }

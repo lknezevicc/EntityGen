@@ -2,8 +2,10 @@ package hr.lknezevic.entitygen.providers;
 
 import hr.lknezevic.entitygen.enums.SpringProperties;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 
 public class PropertiesConnectionProvider extends AbstractConnectionProvider {
@@ -11,8 +13,8 @@ public class PropertiesConnectionProvider extends AbstractConnectionProvider {
 
     public PropertiesConnectionProvider(String propertiesFile) {
         properties = new Properties();
-        try (FileInputStream fis = new FileInputStream(propertiesFile)) {
-            properties.load(fis);
+        try (InputStream is = Files.newInputStream(Path.of(propertiesFile))) {
+            properties.load(is);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load properties from " + propertiesFile, e);
         }
@@ -20,21 +22,21 @@ public class PropertiesConnectionProvider extends AbstractConnectionProvider {
 
     @Override
     protected String getUrl() {
-        return properties.getProperty(SpringProperties.URL.getPropertyValue());
+        return properties.getProperty(SpringProperties.URL.getValue());
     }
 
     @Override
     protected String getUser() {
-        return properties.getProperty(SpringProperties.USER.getPropertyValue());
+        return properties.getProperty(SpringProperties.USER.getValue());
     }
 
     @Override
     protected String getPassword() {
-        return properties.getProperty(SpringProperties.PASSWORD.getPropertyValue());
+        return properties.getProperty(SpringProperties.PASSWORD.getValue());
     }
 
     @Override
     protected String getDriver() {
-        return properties.getProperty(SpringProperties.DRIVER.getPropertyValue());
+        return properties.getProperty(SpringProperties.DRIVER.getValue());
     }
 }

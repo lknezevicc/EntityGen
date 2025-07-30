@@ -23,6 +23,8 @@ public class Relation {
     private RelationType type;              // ONE_TO_ONE, MANY_TO_ONE, etc.
     private boolean bidirectional;
     private String mappedBy;
+    private boolean selfReferencing;         // true if this is a self-referencing relation
+    private boolean isDirectManyToMany;     // true if this should generate direct @ManyToMany without association entity
 
     @Builder.Default
     private Boolean orphanRemoval = false;

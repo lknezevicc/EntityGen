@@ -35,6 +35,7 @@ public class Column {
 
     private boolean unsigned;        // unsigned broj?
     private boolean generated;       // virtualni/generirani stupac?
+    private boolean isLob;           // true for TEXT, CLOB, LONGTEXT, etc.
 
     // 👇 OVO DODAJ — izračunato polje za generiranje entiteta
     private String javaType;         // npr. String, Integer, Boolean — za Javu

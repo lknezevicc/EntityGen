@@ -20,6 +20,7 @@ public class Field {
     private boolean unique;
     private boolean autoIncrement;
     private boolean generated;
+    private boolean isLob;          // true for TEXT, CLOB, LONGTEXT, etc.
 
     private String defaultValue;
     private String comment;
