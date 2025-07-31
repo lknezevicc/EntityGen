@@ -1,12 +1,12 @@
 package hr.lknezevic.entitygen.mapper;
 
 import hr.lknezevic.entitygen.config.UserConfig;
-import hr.lknezevic.entitygen.helper.NamingHelper;
+import hr.lknezevic.entitygen.utils.NamingUtil;
 import hr.lknezevic.entitygen.model.Column;
 import hr.lknezevic.entitygen.model.Table;
-import hr.lknezevic.entitygen.model.template.EmbeddedId;
-import hr.lknezevic.entitygen.model.template.Entity;
-import hr.lknezevic.entitygen.model.template.Field;
+import hr.lknezevic.entitygen.model.template.common.EmbeddedId;
+import hr.lknezevic.entitygen.model.template.common.Entity;
+import hr.lknezevic.entitygen.model.template.common.Field;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.Types;
@@ -41,12 +41,12 @@ public class DefaultEntityModelMapper implements EntityModelMapper {
                     : null;
 
             Entity entity = Entity.builder()
-                    .className(NamingHelper.toPascalCase(table.getName()))
+                    .className(NamingUtil.toPascalCase(table.getName()))
                     .tableName(table.getName())
                     .schema(table.getSchema())
                     .catalog(table.getCatalog())
                     .fields(fields)
-                    .hasCompositeKey(hasCompositeKey)
+                    .compositeKey(hasCompositeKey)
                     .embeddedId(embeddedId)
                     .uniqueConstraints(table.getUniqueConstraints())
                     .build();
@@ -66,7 +66,7 @@ public class DefaultEntityModelMapper implements EntityModelMapper {
 
     private Field mapColumnToField(Column column) {
         return Field.builder()
-                .name(NamingHelper.toCamelCase(column.getName()))
+                .name(NamingUtil.toCamelCase(column.getName()))
                 .columnName(column.getName())
                 .javaType(resolveJavaTypeForId(column.getDataType(), column.getJavaType()))
                 .length(column.getLength())
@@ -89,7 +89,7 @@ public class DefaultEntityModelMapper implements EntityModelMapper {
                 .toList();
 
         return EmbeddedId.builder()
-                .className(NamingHelper.generateEmbeddableClassName(tableName))
+                .className(NamingUtil.generateEmbeddableClassName(tableName))
                 .fields(pkFields)
                 .build();
     }

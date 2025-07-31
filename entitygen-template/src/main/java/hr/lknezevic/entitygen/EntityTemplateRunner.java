@@ -2,13 +2,13 @@ package hr.lknezevic.entitygen;
 
 import hr.lknezevic.entitygen.builder.RelationBuilder;
 import hr.lknezevic.entitygen.config.UserConfig;
-import hr.lknezevic.entitygen.helper.RelationContext;
+import hr.lknezevic.entitygen.helper.relation.RelationContext;
 import hr.lknezevic.entitygen.helper.TemplateRunnerHelper;
 import hr.lknezevic.entitygen.mapper.DefaultEntityModelMapper;
 import hr.lknezevic.entitygen.mapper.EntityModelMapper;
 import hr.lknezevic.entitygen.model.Table;
-import hr.lknezevic.entitygen.model.template.Entity;
-import hr.lknezevic.entitygen.model.template.Relation;
+import hr.lknezevic.entitygen.model.template.common.Entity;
+import hr.lknezevic.entitygen.model.template.common.Relation;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 

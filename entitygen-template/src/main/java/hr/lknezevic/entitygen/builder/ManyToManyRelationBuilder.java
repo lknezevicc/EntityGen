@@ -2,13 +2,13 @@ package hr.lknezevic.entitygen.builder;
 
 import hr.lknezevic.entitygen.enums.CollectionType;
 import hr.lknezevic.entitygen.enums.RelationType;
-import hr.lknezevic.entitygen.helper.NamingHelper;
-import hr.lknezevic.entitygen.helper.RelationDetector;
+import hr.lknezevic.entitygen.utils.NamingUtil;
+import hr.lknezevic.entitygen.helper.relation.RelationDetector;
 import hr.lknezevic.entitygen.model.Column;
 import hr.lknezevic.entitygen.model.ForeignKey;
 import hr.lknezevic.entitygen.model.Table;
-import hr.lknezevic.entitygen.model.template.Entity;
-import hr.lknezevic.entitygen.model.template.Relation;
+import hr.lknezevic.entitygen.model.template.common.Entity;
+import hr.lknezevic.entitygen.model.template.common.Relation;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -158,7 +158,7 @@ public class ManyToManyRelationBuilder extends AbstractRelationBuilder {
         return Relation.builder()
                 .type(RelationType.MANY_TO_MANY)
                 .targetEntityClass(targetEntity.getClassName())
-                .fieldName(NamingHelper.generateFieldName(targetEntity.getClassName(), RelationType.MANY_TO_MANY, true))
+                .fieldName(NamingUtil.generateFieldName(targetEntity.getClassName(), RelationType.MANY_TO_MANY, true))
                 .fetchType(getFetchType())
                 .cascadeType(getCascadeType(RelationType.MANY_TO_MANY))
                 .orphanRemoval(getOrphanRemoval(RelationType.MANY_TO_MANY))
@@ -200,7 +200,7 @@ public class ManyToManyRelationBuilder extends AbstractRelationBuilder {
         return Relation.builder()
                 .type(RelationType.MANY_TO_MANY_DIRECT)
                 .targetEntityClass(targetEntity.getClassName())
-                .fieldName(NamingHelper.generateFieldName(targetEntity.getClassName(), RelationType.MANY_TO_MANY_DIRECT, true))
+                .fieldName(NamingUtil.generateFieldName(targetEntity.getClassName(), RelationType.MANY_TO_MANY_DIRECT, true))
                 .fetchType(getFetchType())
                 .cascadeType(getCascadeType(RelationType.MANY_TO_MANY_DIRECT))
                 .orphanRemoval(getOrphanRemoval(RelationType.MANY_TO_MANY_DIRECT))

@@ -1,4 +1,4 @@
-package hr.lknezevic.entitygen.model.template;
+package hr.lknezevic.entitygen.model.template.common;
 
 import hr.lknezevic.entitygen.model.UniqueConstraint;
 import lombok.Builder;
@@ -23,10 +23,14 @@ public class Entity {
     @Builder.Default
     private List<UniqueConstraint> uniqueConstraints = new ArrayList<>();
 
-    private boolean hasCompositeKey;
+    private boolean compositeKey;
     private EmbeddedId embeddedId;
 
     public List<Field> getPrimaryKeyFields() {
         return fields.stream().filter(Field::isPrimaryKey).toList();
+    }
+
+    public List<Field> getNonPrimaryKeyFields() {
+        return fields.stream().filter(field -> !field.isPrimaryKey()).toList();
     }
 }

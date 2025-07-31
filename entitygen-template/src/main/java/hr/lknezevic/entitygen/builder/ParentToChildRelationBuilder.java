@@ -1,13 +1,13 @@
 package hr.lknezevic.entitygen.builder;
 
 import hr.lknezevic.entitygen.enums.RelationType;
-import hr.lknezevic.entitygen.helper.NamingHelper;
-import hr.lknezevic.entitygen.helper.RelationConfigHelper;
-import hr.lknezevic.entitygen.helper.RelationDetector;
+import hr.lknezevic.entitygen.utils.NamingUtil;
+import hr.lknezevic.entitygen.helper.relation.RelationConfigHelper;
+import hr.lknezevic.entitygen.helper.relation.RelationDetector;
 import hr.lknezevic.entitygen.model.ForeignKey;
 import hr.lknezevic.entitygen.model.Table;
-import hr.lknezevic.entitygen.model.template.Entity;
-import hr.lknezevic.entitygen.model.template.Relation;
+import hr.lknezevic.entitygen.model.template.common.Entity;
+import hr.lknezevic.entitygen.model.template.common.Relation;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -122,14 +122,14 @@ public class ParentToChildRelationBuilder extends AbstractRelationBuilder {
      */
     private String generateSelfReferencingFieldName(String targetEntityClass, RelationType relationType, boolean isSelfReferencing) {
         if (!isSelfReferencing) {
-            return NamingHelper.generateFieldName(targetEntityClass, relationType, false);
+            return NamingUtil.generateFieldName(targetEntityClass, relationType, false);
         }
 
         // Za self-referencing relacije, koristi smislene nazive
         return switch (relationType) {
             case MANY_TO_ONE -> "parent" + targetEntityClass; // npr. parentKategorija
             case ONE_TO_ONE -> "related" + targetEntityClass;  // npr. relatedUser
-            default -> NamingHelper.generateFieldName(targetEntityClass, relationType, false);
+            default -> NamingUtil.generateFieldName(targetEntityClass, relationType, false);
         };
     }
 }

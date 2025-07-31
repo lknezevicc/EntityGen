@@ -1,12 +1,12 @@
 package hr.lknezevic.entitygen.builder;
 
 import hr.lknezevic.entitygen.enums.RelationType;
-import hr.lknezevic.entitygen.helper.NamingHelper;
-import hr.lknezevic.entitygen.helper.RelationDetector;
+import hr.lknezevic.entitygen.utils.NamingUtil;
+import hr.lknezevic.entitygen.helper.relation.RelationDetector;
 import hr.lknezevic.entitygen.model.ForeignKey;
 import hr.lknezevic.entitygen.model.Table;
-import hr.lknezevic.entitygen.model.template.Entity;
-import hr.lknezevic.entitygen.model.template.Relation;
+import hr.lknezevic.entitygen.model.template.common.Entity;
+import hr.lknezevic.entitygen.model.template.common.Relation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +76,7 @@ public class InverseRelationBuilder extends AbstractRelationBuilder {
     private Relation buildInverseRelation(Table currentTable, Table referencingTable, Entity referencingEntity, List<ForeignKey> fkGroup, boolean isSelfReferencing) {
         // Determiniraj tip inverse relacije
         boolean isOneToOne = RelationDetector.isOneToOneRelation(referencingTable, fkGroup);
-        String mappedByField = isSelfReferencing ? "parent" + currentTable.getName() : NamingHelper.toCamelCase(currentTable.getName());
+        String mappedByField = isSelfReferencing ? "parent" + currentTable.getName() : NamingUtil.toCamelCase(currentTable.getName());
 
         if (isOneToOne) {
             // Kreiraj ONE_TO_ONE mappedBy relaciju
@@ -115,14 +115,14 @@ public class InverseRelationBuilder extends AbstractRelationBuilder {
      */
     private String generateSelfReferencingInverseFieldName(String targetEntityClass, RelationType relationType, boolean isSelfReferencing) {
         if (!isSelfReferencing) {
-            return NamingHelper.generateFieldName(targetEntityClass, relationType, relationType == RelationType.ONE_TO_MANY);
+            return NamingUtil.generateFieldName(targetEntityClass, relationType, relationType == RelationType.ONE_TO_MANY);
         }
 
         // Za self-referencing relacije, koristi smislene nazive
         return switch (relationType) {
             case ONE_TO_MANY -> "children"; // npr. children za hijerarhiju kategorija
             case ONE_TO_ONE -> "child" + targetEntityClass;
-            default -> NamingHelper.generateFieldName(targetEntityClass, relationType, relationType == RelationType.ONE_TO_MANY);
+            default -> NamingUtil.generateFieldName(targetEntityClass, relationType, relationType == RelationType.ONE_TO_MANY);
         };
     }
 }

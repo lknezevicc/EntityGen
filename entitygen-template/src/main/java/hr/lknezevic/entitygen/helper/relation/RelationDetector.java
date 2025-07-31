@@ -1,8 +1,8 @@
-package hr.lknezevic.entitygen.helper;
+package hr.lknezevic.entitygen.helper.relation;
 
 import hr.lknezevic.entitygen.model.ForeignKey;
 import hr.lknezevic.entitygen.model.Table;
-import hr.lknezevic.entitygen.model.template.Entity;
+import hr.lknezevic.entitygen.model.template.common.Entity;
 
 import java.util.*;
 import java.util.stream.Collectors;

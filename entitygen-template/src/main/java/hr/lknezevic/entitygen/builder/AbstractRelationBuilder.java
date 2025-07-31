@@ -4,11 +4,11 @@ import hr.lknezevic.entitygen.enums.CascadeType;
 import hr.lknezevic.entitygen.enums.CollectionType;
 import hr.lknezevic.entitygen.enums.FetchType;
 import hr.lknezevic.entitygen.enums.RelationType;
-import hr.lknezevic.entitygen.helper.RelationConfigHelper;
-import hr.lknezevic.entitygen.helper.RelationContext;
+import hr.lknezevic.entitygen.helper.relation.RelationConfigHelper;
+import hr.lknezevic.entitygen.helper.relation.RelationContext;
 import hr.lknezevic.entitygen.model.ForeignKey;
 import hr.lknezevic.entitygen.model.Table;
-import hr.lknezevic.entitygen.model.template.Relation;
+import hr.lknezevic.entitygen.model.template.common.Relation;
 
 import java.util.List;
 import java.util.Set;

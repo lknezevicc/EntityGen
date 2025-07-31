@@ -1,11 +1,11 @@
-package hr.lknezevic.entitygen.helper;
+package hr.lknezevic.entitygen.utils;
 
 import hr.lknezevic.entitygen.enums.RelationType;
 
 /**
  * Helper klasa za imenovanje polja i klasa u relacijama
  */
-public class NamingHelper {
+public class NamingUtil {
     
     /**
      * Konvertira ime tablice u PascalCase (ClassName)
@@ -91,5 +91,9 @@ public class NamingHelper {
      */
     public static String generateEmbeddableClassName(String tableName) {
         return toPascalCase(cleanTableName(tableName)) + "Id";
+    }
+
+    public static String capitalize(String str) {
+        return Character.toUpperCase(str.charAt(0)) + str.substring(1);
     }
 }

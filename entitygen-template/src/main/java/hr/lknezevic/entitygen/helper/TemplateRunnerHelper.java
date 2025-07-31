@@ -6,16 +6,16 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import hr.lknezevic.entitygen.config.UserConfig;
 import hr.lknezevic.entitygen.enums.ComponentType;
-import hr.lknezevic.entitygen.model.template.Entity;
+import hr.lknezevic.entitygen.model.template.common.Entity;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Map;
-import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Helper class for FreeMarker template processing and component generation.
@@ -30,8 +30,10 @@ public class TemplateRunnerHelper {
     private final static String JAVA_EXTENSION = ".java";
     private final UserConfig userConfig;
     private final Configuration cfg;
+    private final ImportAnalyzer importAnalyzer;
 
     public TemplateRunnerHelper(UserConfig userConfig) {
+        importAnalyzer = new ImportAnalyzer();
         this.userConfig = userConfig;
 
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_32);
@@ -53,7 +55,7 @@ public class TemplateRunnerHelper {
      */
     public void generateComponents(Entity entity, Map<String, Entity> entityByClassName) {
         for (ComponentType componentType : ComponentType.values()) {
-            if (componentType == ComponentType.EMBEDDABLE && !entity.isHasCompositeKey()) {
+            if (componentType == ComponentType.EMBEDDABLE && !entity.isCompositeKey()) {
                 log.debug("Skipping EMBEDDABLE generation for {} - no composite key", entity.getClassName());
                 continue;
             }
@@ -63,8 +65,11 @@ public class TemplateRunnerHelper {
                 continue;
             }
 
+            // TODO IMPORT ANALYZER
+            List<String> imports = importAnalyzer.analyzeFor(entity, componentType).getSortedImports();
+
             String fileName;
-            if (componentType == ComponentType.EMBEDDABLE && entity.isHasCompositeKey()) {
+            if (componentType == ComponentType.EMBEDDABLE && entity.isCompositeKey()) {
                 fileName = getComponentPackagePath(componentType) + File.separator +
                         entity.getEmbeddedId().getClassName() + getComponentSuffix(componentType) + JAVA_EXTENSION;
             } else {
@@ -90,29 +95,6 @@ public class TemplateRunnerHelper {
         }
     }
 
-    private String getComponentSuffix(ComponentType componentType) {
-        return switch (componentType) {
-            case ENTITY -> userConfig.getEntitySuffix();
-            case DTO -> userConfig.getDtoSuffix();
-            case REPOSITORY -> userConfig.getRepositorySuffix();
-            case SERVICE -> userConfig.getServiceSuffix();
-            case SERVICE_IMPL -> userConfig.getServiceSuffix() + "Impl";
-            case CONTROLLER -> userConfig.getControllerSuffix();
-            default -> "";
-        };
-    }
-
-    private String getComponentPackagePath(ComponentType componentType) {
-        return switch (componentType) {
-            case ENTITY, EMBEDDABLE -> resolvePath(userConfig.getEntityPackage());
-            case DTO -> resolvePath(userConfig.getDtoPackage());
-            case REPOSITORY -> resolvePath(userConfig.getRepositoryPackage());
-            case SERVICE -> resolvePath(userConfig.getServicePackage());
-            case SERVICE_IMPL -> resolvePath(userConfig.getServicePackage() + ".impl");
-            case CONTROLLER -> resolvePath(userConfig.getControllerPackage());
-        };
-    }
-
     private Template getTemplate(ComponentType componentType) throws IOException {
         return switch (componentType) {
             case EMBEDDABLE -> cfg.getTemplate("embeddable.ftl");
@@ -133,11 +115,5 @@ public class TemplateRunnerHelper {
             case REPOSITORY -> userConfig.getGenerateRepositories();
             default -> true;
         };
-    }
-
-    private String resolvePath(String componentPackage) {
-        return Paths.get(userConfig.getOutputDirectory())
-                .resolve(componentPackage.replace(".", File.separator))
-                .toString();
     }
 }

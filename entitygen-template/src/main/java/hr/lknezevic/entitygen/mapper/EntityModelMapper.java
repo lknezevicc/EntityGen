@@ -1,8 +1,8 @@
 package hr.lknezevic.entitygen.mapper;
 
 import hr.lknezevic.entitygen.model.Table;
-import hr.lknezevic.entitygen.model.template.Entity;
-import hr.lknezevic.entitygen.model.template.Field;
+import hr.lknezevic.entitygen.model.template.common.Entity;
+import hr.lknezevic.entitygen.model.template.common.Field;
 
 import java.util.List;
 

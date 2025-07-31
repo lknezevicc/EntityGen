@@ -1,4 +1,4 @@
-package hr.lknezevic.entitygen.helper;
+package hr.lknezevic.entitygen.helper.relation;
 
 import hr.lknezevic.entitygen.enums.CascadeType;
 import hr.lknezevic.entitygen.enums.CollectionType;

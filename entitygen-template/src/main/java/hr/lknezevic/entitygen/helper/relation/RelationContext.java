@@ -1,7 +1,7 @@
-package hr.lknezevic.entitygen.helper;
+package hr.lknezevic.entitygen.helper.relation;
 
 import hr.lknezevic.entitygen.model.Table;
-import hr.lknezevic.entitygen.model.template.Entity;
+import hr.lknezevic.entitygen.model.template.common.Entity;
 import lombok.Data;
 
 import java.util.List;

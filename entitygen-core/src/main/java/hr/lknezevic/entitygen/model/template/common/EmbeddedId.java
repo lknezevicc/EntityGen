@@ -1,4 +1,4 @@
-package hr.lknezevic.entitygen.model.template;
+package hr.lknezevic.entitygen.model.template.common;
 
 import lombok.Builder;
 import lombok.Data;

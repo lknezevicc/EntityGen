@@ -1,8 +1,8 @@
 package hr.lknezevic.entitygen.builder;
 
-import hr.lknezevic.entitygen.helper.RelationContext;
+import hr.lknezevic.entitygen.helper.relation.RelationContext;
 import hr.lknezevic.entitygen.model.Table;
-import hr.lknezevic.entitygen.model.template.Relation;
+import hr.lknezevic.entitygen.model.template.common.Relation;
 import lombok.Data;
 
 import java.util.ArrayList;
