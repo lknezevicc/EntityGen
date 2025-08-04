@@ -2,7 +2,6 @@ package hr.lknezevic.entitygen.helper.relation;
 
 import hr.lknezevic.entitygen.model.ForeignKey;
 import hr.lknezevic.entitygen.model.Table;
-import hr.lknezevic.entitygen.model.template.common.Entity;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,18 +24,15 @@ public class RelationDetector {
      * @return true if this represents a ONE_TO_ONE relationship
      */
     public static boolean isOneToOneRelation(Table sourceTable, List<ForeignKey> fkGroup) {
-        // je li FK ujedno i PK (shared primary key pattern)
         if (isForeignKeyEqualsPrimaryKey(sourceTable, fkGroup)) {
             return true;
         }
-        
-        // svi FK-ovi unique?
+
         boolean allUnique = fkGroup.stream().allMatch(ForeignKey::isUnique);
         if (allUnique) {
             return true;
         }
-        
-        // jesu li FK kolone unique constraint u source tablici
+
         Set<String> fkColumns = fkGroup.stream()
                 .map(ForeignKey::getFkColumn)
                 .collect(Collectors.toSet());
@@ -73,42 +69,25 @@ public class RelationDetector {
      * @return true if this is a junction table
      */
     public static boolean isJunctionTable(Table table) {
-        // Junction tablica mora imati točno 2 foreign key-a
         if (table.getForeignKeys().size() != 2) {
             return false;
         }
-        
-        // FK-ovi moraju referencirati različite tablice
+
         List<ForeignKey> foreignKeys = table.getForeignKeys();
         String refTable1 = foreignKeys.get(0).getReferencedTable();
         String refTable2 = foreignKeys.get(1).getReferencedTable();
         
         if (refTable1.equals(refTable2)) {
-            return false; // Self-referencing nije junction tablica
+            return false;
         }
-        
-        // PK mora se sastojati od FK kolona (može imati additional data)
+
         Set<String> fkColumns = foreignKeys.stream()
                 .map(ForeignKey::getFkColumn)
                 .collect(Collectors.toSet());
         
         Set<String> pkColumns = new HashSet<>(table.getPrimaryKeys());
-        
-        // FK kolone moraju biti dio PK-a
+
         return pkColumns.containsAll(fkColumns);
-    }
-    
-    /**
-     * Finds an entity by its table name.
-     *
-     * @param tableName name of the table to find
-     * @param entities list of entities to search
-     * @return Optional containing the entity if found
-     */
-    public static Optional<Entity> findEntityByTableName(String tableName, List<Entity> entities) {
-        return entities.stream()
-                .filter(e -> e.getTableName().equalsIgnoreCase(tableName))
-                .findFirst();
     }
     
     /**
@@ -119,8 +98,8 @@ public class RelationDetector {
      */
     public static Map<String, List<ForeignKey>> groupForeignKeysByConstraint(List<ForeignKey> foreignKeys) {
         return foreignKeys.stream()
-                .filter(fk -> fk.getName() != null && !fk.getName().isEmpty())
-                .collect(Collectors.groupingBy(ForeignKey::getName));
+                .filter(fk -> fk.getConstraintName() != null && !fk.getConstraintName() .isEmpty())
+                .collect(Collectors.groupingBy(ForeignKey::getConstraintName));
     }
     
     /**
@@ -134,4 +113,11 @@ public class RelationDetector {
     public static String generateRelationKey(String sourceTable, String targetTable, String type) {
         return String.format("%s-%s-%s", sourceTable, targetTable, type);
     }
+
+    public static boolean isColumnPartOfPrimaryKey(Table sourceTable, String columnName) {
+        if (columnName == null) return false;
+        return sourceTable.getPrimaryKeys().stream()
+                .anyMatch(pk -> pk.equalsIgnoreCase(columnName));
+    }
+
 }

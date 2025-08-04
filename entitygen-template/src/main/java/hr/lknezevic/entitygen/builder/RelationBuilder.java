@@ -1,6 +1,9 @@
 package hr.lknezevic.entitygen.builder;
 
-import hr.lknezevic.entitygen.helper.relation.RelationContext;
+import hr.lknezevic.entitygen.builder.relation.InverseRelationBuilder;
+import hr.lknezevic.entitygen.builder.relation.ManyToManyRelationBuilder;
+import hr.lknezevic.entitygen.builder.relation.ParentToChildRelationBuilder;
+import hr.lknezevic.entitygen.model.RelationContext;
 import hr.lknezevic.entitygen.model.Table;
 import hr.lknezevic.entitygen.model.template.common.Relation;
 import lombok.Data;

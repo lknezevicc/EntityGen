@@ -10,7 +10,6 @@ public class Field {
     private String columnName;
 
     private String javaType;
-    private String sqlType;
     private Integer length;
     private Integer precision;
     private Integer scale;
@@ -19,8 +18,7 @@ public class Field {
     private boolean nullable;
     private boolean unique;
     private boolean autoIncrement;
-    private boolean generated;
-    private boolean isLob;          // true for TEXT, CLOB, LONGTEXT, etc.
+    private boolean lob;
 
     private String defaultValue;
     private String comment;

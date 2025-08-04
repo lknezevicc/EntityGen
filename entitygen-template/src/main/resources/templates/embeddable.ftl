@@ -1,11 +1,11 @@
-package ${template.getPackage()};
+package ${template.componentPackage};
 
-<#list template.getAllImports() as imp>
-import ${imp};
+<#list template.imports as imp>
+${imp}
 </#list>
 
 /**
- * Embeddable class for {@link ${template.entity.className}} entity operations.
+ * Embeddable class for {@link ${template.userConfig.entityPackage}.${template.entity.className}} entity operations.
  * <p>
  * Embeddable class for composite primary key of ${template.entity.tableName} table.
  *
@@ -16,13 +16,9 @@ import ${imp};
 @AllArgsConstructor
 @Builder
 @Embeddable
-public class ${template.getName()} implements Serializable {
+public class ${template.embeddedIdName} implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
-
-    <#list template.entity.embeddedId.fields as field>
-    @Column(${template.getColumnParams(field)})
-    private ${field.javaType} ${field.name};
-    </#list>
-    
+    ${template.modelBody}
 }

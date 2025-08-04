@@ -1,6 +1,7 @@
 package hr.lknezevic.entitygen.mapper;
 
 import hr.lknezevic.entitygen.config.UserConfig;
+import hr.lknezevic.entitygen.model.ForeignKey;
 import hr.lknezevic.entitygen.utils.NamingUtil;
 import hr.lknezevic.entitygen.model.Column;
 import hr.lknezevic.entitygen.model.Table;
@@ -24,12 +25,11 @@ public class DefaultEntityModelMapper implements EntityModelMapper {
         List<Entity> entities = new ArrayList<>();
 
         for (Table table : tables) {
-            // Get all foreign key column names for this table
+
             Set<String> foreignKeyColumns = table.getForeignKeys().stream()
-                    .map(fk -> fk.getFkColumn())
+                    .map(ForeignKey::getFkColumn)
                     .collect(Collectors.toSet());
 
-            // Map columns to fields, but keep primary keys even if they are foreign keys
             List<Field> fields = table.getColumns().stream()
                     .filter(column -> !foreignKeyColumns.contains(column.getName()) || column.isPrimaryKey())
                     .map(this::mapColumnToField)
@@ -57,7 +57,6 @@ public class DefaultEntityModelMapper implements EntityModelMapper {
         return entities;
     }
 
-    // Helper method to get all fields including FK for composite key checking
     private List<Field> getAllFieldsIncludingFK(Table table) {
         return table.getColumns().stream()
                 .map(this::mapColumnToField)
@@ -76,8 +75,7 @@ public class DefaultEntityModelMapper implements EntityModelMapper {
                 .nullable(column.isNullable())
                 .unique(column.isUnique())
                 .autoIncrement(column.isAutoIncrement())
-                .generated(column.isGenerated())
-                .isLob(column.isLob())
+                .lob(column.isLob())
                 .defaultValue(column.getDefaultValue())
                 .comment(column.getComment())
                 .build();
@@ -89,7 +87,7 @@ public class DefaultEntityModelMapper implements EntityModelMapper {
                 .toList();
 
         return EmbeddedId.builder()
-                .className(NamingUtil.generateEmbeddableClassName(tableName))
+                .className(NamingUtil.generateEmbeddableClassName(tableName, userConfig))
                 .fields(pkFields)
                 .build();
     }

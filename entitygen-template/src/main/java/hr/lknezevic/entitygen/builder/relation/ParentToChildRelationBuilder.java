@@ -1,16 +1,16 @@
-package hr.lknezevic.entitygen.builder;
+package hr.lknezevic.entitygen.builder.relation;
 
+import hr.lknezevic.entitygen.builder.RelationBuilder;
 import hr.lknezevic.entitygen.enums.RelationType;
-import hr.lknezevic.entitygen.utils.NamingUtil;
 import hr.lknezevic.entitygen.helper.relation.RelationConfigHelper;
 import hr.lknezevic.entitygen.helper.relation.RelationDetector;
 import hr.lknezevic.entitygen.model.ForeignKey;
 import hr.lknezevic.entitygen.model.Table;
 import hr.lknezevic.entitygen.model.template.common.Entity;
 import hr.lknezevic.entitygen.model.template.common.Relation;
+import hr.lknezevic.entitygen.utils.NamingUtil;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ParentToChildRelationBuilder extends AbstractRelationBuilder {
 
@@ -19,7 +19,7 @@ public class ParentToChildRelationBuilder extends AbstractRelationBuilder {
     }
 
     @Override
-    protected List<Relation> buildSpecificRelations() {
+    public List<Relation> buildSpecificRelations() {
         List<Relation> relations = new ArrayList<>();
 
         // Grupiranje FK-ova po constraint name
@@ -31,12 +31,11 @@ public class ParentToChildRelationBuilder extends AbstractRelationBuilder {
             // Validacija FK grupe
             if (fkGroup.isEmpty()) continue;
 
-            ForeignKey sample = fkGroup.get(0);
+            ForeignKey sample = fkGroup.getFirst();
             String targetTableName = sample.getReferencedTable();
 
             // Provjeri da li postoji target entity
             Optional<Entity> targetEntityOpt = Optional.ofNullable(getContext().getEntityByTableName().get(targetTableName));
-            //Optional<Entity> targetEntityOpt = RelationDetector.findEntityByTableName(targetTableName, getContext().getAllEntities());
             if (targetEntityOpt.isEmpty()) continue;
 
             Entity targetEntity = targetEntityOpt.get();
@@ -64,7 +63,7 @@ public class ParentToChildRelationBuilder extends AbstractRelationBuilder {
      * Kreira owning stranu relacije (MANY_TO_ONE ili ONE_TO_ONE)
      */
     private Relation buildOwningRelation(Table sourceTable, List<ForeignKey> fkGroup, Entity targetEntity) {
-        ForeignKey sample = fkGroup.get(0);
+        ForeignKey sample = fkGroup.getFirst();
 
         // Determiniraj tip relacije
         boolean isOneToOne = RelationDetector.isOneToOneRelation(sourceTable, fkGroup);
@@ -78,7 +77,7 @@ public class ParentToChildRelationBuilder extends AbstractRelationBuilder {
                 .type(relationType)
                 .targetEntityClass(targetEntity.getClassName())
                 .fieldName(generateSelfReferencingFieldName(targetEntity.getClassName(), relationType, isSelfReferencing))
-                .optional(!sample.isNotNull())
+                .optional(!sample.isNullable())
                 .fetchType(getFetchType())
                 .cascadeType(RelationConfigHelper.getCascadeTypeFromConstraints(sample, relationType))
                 .orphanRemoval(getOrphanRemoval(relationType))
@@ -88,12 +87,12 @@ public class ParentToChildRelationBuilder extends AbstractRelationBuilder {
         List<String> joinColumns = fkGroup.stream()
                 .map(ForeignKey::getFkColumn)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .toList();
 
         List<String> referencedColumns = fkGroup.stream()
                 .map(ForeignKey::getReferencedColumn)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .toList();
 
         if (!joinColumns.isEmpty() && joinColumns.size() == referencedColumns.size()) {
             builder.joinColumns(joinColumns)
@@ -104,7 +103,7 @@ public class ParentToChildRelationBuilder extends AbstractRelationBuilder {
         if (isOneToOne) {
             // Shared primary key pattern
             if (RelationDetector.isForeignKeyEqualsPrimaryKey(sourceTable, fkGroup)) {
-                String mapsId = joinColumns.size() == 1 ? joinColumns.get(0) : null;
+                String mapsId = joinColumns.size() == 1 ? joinColumns.getFirst() : null;
                 builder.mapsId(mapsId);
             }
 
@@ -127,8 +126,8 @@ public class ParentToChildRelationBuilder extends AbstractRelationBuilder {
 
         // Za self-referencing relacije, koristi smislene nazive
         return switch (relationType) {
-            case MANY_TO_ONE -> "parent" + targetEntityClass; // npr. parentKategorija
-            case ONE_TO_ONE -> "related" + targetEntityClass;  // npr. relatedUser
+            case MANY_TO_ONE -> "parent" + targetEntityClass;
+            case ONE_TO_ONE -> "related" + targetEntityClass;
             default -> NamingUtil.generateFieldName(targetEntityClass, relationType, false);
         };
     }

@@ -1,5 +1,6 @@
-package hr.lknezevic.entitygen.builder;
+package hr.lknezevic.entitygen.builder.relation;
 
+import hr.lknezevic.entitygen.builder.RelationBuilder;
 import hr.lknezevic.entitygen.enums.RelationType;
 import hr.lknezevic.entitygen.utils.NamingUtil;
 import hr.lknezevic.entitygen.helper.relation.RelationDetector;
@@ -23,7 +24,7 @@ public class InverseRelationBuilder extends AbstractRelationBuilder {
      * Kreira MANY_TO_ONE i ONE_TO_ONE relacije na temelju foreign key-ova
      */
     @Override
-    protected List<Relation> buildSpecificRelations() {
+    public List<Relation> buildSpecificRelations() {
         List<Relation> relations = new ArrayList<>();
 
         // Pronađi tablice koje referenciraju trenutnu tablicu
@@ -76,7 +77,7 @@ public class InverseRelationBuilder extends AbstractRelationBuilder {
     private Relation buildInverseRelation(Table currentTable, Table referencingTable, Entity referencingEntity, List<ForeignKey> fkGroup, boolean isSelfReferencing) {
         // Determiniraj tip inverse relacije
         boolean isOneToOne = RelationDetector.isOneToOneRelation(referencingTable, fkGroup);
-        String mappedByField = isSelfReferencing ? "parent" + currentTable.getName() : NamingUtil.toCamelCase(currentTable.getName());
+        String mappedByField = isSelfReferencing ? "parent" + NamingUtil.capitalize(currentTable.getName()) : NamingUtil.toCamelCase(currentTable.getName());
 
         if (isOneToOne) {
             // Kreiraj ONE_TO_ONE mappedBy relaciju
@@ -103,7 +104,7 @@ public class InverseRelationBuilder extends AbstractRelationBuilder {
                     .fetchType(getFetchType())
                     .cascadeType(getCascadeType(RelationType.ONE_TO_MANY))
                     .orphanRemoval(getOrphanRemoval(RelationType.ONE_TO_MANY))
-                    .collectionType(getCollectionType(referencingTable.getName(), fkGroup))
+                    .collectionType(getCollectionType(fkGroup))
                     .mappedBy(mappedByField)
                     .selfReferencing(isSelfReferencing)
                     .build();
@@ -120,9 +121,9 @@ public class InverseRelationBuilder extends AbstractRelationBuilder {
 
         // Za self-referencing relacije, koristi smislene nazive
         return switch (relationType) {
-            case ONE_TO_MANY -> "children"; // npr. children za hijerarhiju kategorija
+            case ONE_TO_MANY -> "children";
             case ONE_TO_ONE -> "child" + targetEntityClass;
-            default -> NamingUtil.generateFieldName(targetEntityClass, relationType, relationType == RelationType.ONE_TO_MANY);
+            default -> NamingUtil.generateFieldName(targetEntityClass, relationType, true);
         };
     }
 }

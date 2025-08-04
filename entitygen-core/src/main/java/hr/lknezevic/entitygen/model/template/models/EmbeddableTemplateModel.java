@@ -1,49 +1,35 @@
 package hr.lknezevic.entitygen.model.template.models;
 
-import hr.lknezevic.entitygen.config.UserConfig;
 import hr.lknezevic.entitygen.enums.ComponentType;
-import hr.lknezevic.entitygen.model.template.common.Entity;
-import hr.lknezevic.entitygen.model.template.common.Field;
+import hr.lknezevic.entitygen.model.template.TemplateConst;
+import hr.lknezevic.entitygen.model.template.TemplateProviderObject;
+import hr.lknezevic.entitygen.model.template.modules.FieldModule;
+import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-public class EmbeddableTemplateModel extends TemplateModel {
 
-    public EmbeddableTemplateModel(ComponentType componentType, Entity entity, UserConfig config, List<String> imports, Map<String, Entity> entityByClassName) {
-        super(componentType, entity, config, imports, entityByClassName);
+@Getter
+public class EmbeddableTemplateModel extends AbstractTemplateModel {
+
+    public EmbeddableTemplateModel(TemplateProviderObject tpo, List<String> imports) {
+        super(tpo.componentType(), tpo.entity(), tpo.userConfig(), tpo.entityByClassName(), imports);
     }
 
     @Override
-    public List<String> getAllImports() {
-        return new ArrayList<>(imports);
+    public String getModelBody() {
+        List<String> fields = entity.getEmbeddedId()
+                .getFields()
+                .stream()
+                .map(field ->
+                        FieldModule.builder()
+                                .componentType(ComponentType.EMBEDDABLE)
+                                .field(field)
+                                .build()
+                                .construct()
+                ).toList();
+
+        return String.join(TemplateConst.NEW_LINE, fields);
     }
 
-    public String getColumnParams(Field field) {
-        StringBuilder params = new StringBuilder();
-
-        params.append("name = \"").append(field.getColumnName()).append("\"");
-
-        if (!field.isNullable()) {
-            params.append(", nullable = false");
-        }
-
-        if (field.getLength() != null && isStringType(field.getJavaType())) {
-            params.append(", length = ").append(field.getLength());
-        }
-
-//        if (field.getPrecision() != null) {
-//            params.append(", precision = ").append(field.getPrecision());
-//        }
-//        if (field.getScale() != null) {
-//            params.append(", scale = ").append(field.getScale());
-//        }
-        
-        return params.toString();
-    }
-
-    private boolean isStringType(String javaType) {
-        return "String".equals(javaType);
-    }
 }

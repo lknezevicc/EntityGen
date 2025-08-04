@@ -1,11 +1,11 @@
-package ${template.getPackage()};
+package ${template.componentPackage};
 
-<#list template.getAllImports() as imp>
-import ${imp};
+<#list template.imports as imp>
+${imp}
 </#list>
 
 /**
- * Service implementation for {@link ${template.entity.className}} business logic.
+ * Service implementation for {@link ${template.userConfig.entityPackage}.${template.entity.className}} business logic.
  * <p>
  * Handles entity-to-DTO conversion and repository operations.
  *
@@ -13,12 +13,12 @@ import ${imp};
  */
 @Service
 @RequiredArgsConstructor
-public class ${template.getName()} implements ${template.getServiceName()} {
+public class ${template.serviceImplName} implements ${template.serviceName} {
 
-    private final ${template.getRepositoryName()} repository;
+    private final ${template.repositoryName} repository;
 
     @Override
-    public List<${template.getDtoName()}> findAll() {
+    public List<${template.dtoName}> findAll() {
         return repository.findAll()
                 .stream()
                 .map(this::toDto)
@@ -31,9 +31,10 @@ public class ${template.getName()} implements ${template.getServiceName()} {
      * @param entity the entity to convert
      * @return converted DTO
      */
-    private ${template.getDtoName()} toDto(${template.getEntityName()} entity) {
-        return new ${template.getDtoName()}(
-                    ${template.getDtoConstructorParams()}
+    private ${template.dtoName} toDto(${template.entityName} entity) {
+        return new ${template.dtoName}(
+                ${template.modelBody}
         );
     }
+
 }

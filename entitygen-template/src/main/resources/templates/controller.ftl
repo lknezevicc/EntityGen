@@ -1,11 +1,11 @@
-package ${template.getPackage()};
+package ${template.componentPackage};
 
-<#list template.getAllImports() as imp>
-import ${imp};
+<#list template.imports as imp>
+${imp}
 </#list>
 
 /**
- * REST Controller for {@link ${template.entity.className}} entity operations.
+ * REST Controller for {@link ${template.userConfig.entityPackage}.${template.entityName}} entity operations.
  * <p>
  * Provides RESTful endpoints for ${template.entity.tableName} entity management.
  * All responses use ResponseEntity for proper HTTP status handling.
@@ -15,20 +15,9 @@ import ${imp};
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/${template.entity.tableName?lower_case}")
-public class ${template.getControllerName()} {
+public class ${template.controllerName} {
 
-    private final ${template.getServiceName()} service;
+    private final ${template.serviceName} service;
 
-    /**
-     * Retrieves all entities as DTOs.
-     *
-     * @return ResponseEntity with list of all DTOs and HTTP 200 status
-     */
-    @GetMapping
-    public ResponseEntity<List<${template.getDtoName()}>> findAll() {
-        List<${template.getDtoName()}> entities = service.findAll();
-        return entities.isEmpty()
-            ? ResponseEntity.noContent().build()
-            : ResponseEntity.ok(entities);
-    }
+    ${template.modelBody}
 }

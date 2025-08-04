@@ -6,12 +6,9 @@ import hr.lknezevic.entitygen.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -22,9 +19,10 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
     @Override
     public List<Schema> extractSchemas(Connection connection) {
         List<Schema> schemas = new ArrayList<>();
+        ResultSet rsCatalogs = null;
         try {
             DatabaseMetaData metaData = connection.getMetaData();
-            ResultSet rsCatalogs = metaData.getCatalogs();
+            rsCatalogs = metaData.getCatalogs();
 
             log.debug("Fetching catalogs (databases) from metadata...");
 
@@ -52,6 +50,14 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
         } catch (Exception e) {
             log.error("Error extracting schemas", e);
             throw new RuntimeException(e);
+        } finally {
+            if (rsCatalogs != null) {
+                try {
+                    rsCatalogs.close();
+                } catch (SQLException e) {
+                    log.warn("Failed to close ResultSet", e);
+                }
+            }
         }
 
         return schemas;
@@ -75,6 +81,8 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
                 List<Column> columns = extractColumns(metaData, schemaName, tableName);
                 List<ForeignKey> foreignKeys = extractForeignKeys(metaData, schemaName, tableName);
                 List<UniqueConstraint> uniqueConstraints = extractUniqueConstraints(metaData, schemaName, tableName);
+
+                updateForeignKeys(foreignKeys, columns);
 
                 Table table = Table.builder()
                         .name(tableName)
@@ -103,7 +111,10 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
         Set<String> primaryKeys = new HashSet<>();
         try (ResultSet rsPK = metaData.getPrimaryKeys(schemaName, null, tableName)) {
             while (rsPK.next()) {
-                primaryKeys.add(rsPK.getString("COLUMN_NAME"));
+                String pkColumn = rsPK.getString("COLUMN_NAME");
+                if (pkColumn != null) {
+                    primaryKeys.add(pkColumn);
+                }
             }
         } catch (SQLException e) {
             log.warn("Error retrieving primary keys for {}.{}", schemaName, tableName, e);
@@ -113,7 +124,7 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
         try (ResultSet rsIndex = metaData.getIndexInfo(schemaName, null, tableName, true, false)) {
             while (rsIndex.next()) {
                 String columnName = rsIndex.getString("COLUMN_NAME");
-                if (columnName != null) {
+                if (columnName != null && !primaryKeys.contains(columnName)) {
                     uniqueColumns.add(columnName);
                 }
             }
@@ -130,17 +141,15 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
 
                 int columnSize = rs.getInt("COLUMN_SIZE");
                 int scale = rs.getInt("DECIMAL_DIGITS");
-                
-                // Determine length vs precision based on data type
+
                 Integer length = null;
                 Integer precision = null;
-                
-                // String types use length
+
                 if (dataType == Types.VARCHAR || dataType == Types.CHAR || 
                     dataType == Types.LONGVARCHAR || dataType == Types.CLOB) {
                     length = columnSize > 0 ? columnSize : null;
                 }
-                // Numeric types use precision
+
                 else if (dataType == Types.NUMERIC || dataType == Types.DECIMAL) {
                     precision = columnSize > 0 ? columnSize : null;
                 }
@@ -148,7 +157,7 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
                 Column column = Column.builder()
                         .name(columnName)
                         .dataType(dataType)
-                        .typeName(rs.getString("TYPE_NAME"))
+                        .javaType(resolveJavaType(dataType, precision, scale))
                         .nullable("YES".equalsIgnoreCase(rs.getString("IS_NULLABLE")))
                         .primaryKey(primaryKeys.contains(columnName))
                         .autoIncrement("YES".equalsIgnoreCase(rs.getString("IS_AUTOINCREMENT")))
@@ -157,11 +166,8 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
                         .comment(rs.getString("REMARKS"))
                         .length(length)
                         .precision(precision)
-                        .scale(scale > 0 ? scale : null)
-                        .javaType(resolveJavaType(dataType))
-                        .isLob(isLobType(dataType) || "TEXT".equalsIgnoreCase(rs.getString("TYPE_NAME")) || 
-                               "LONGTEXT".equalsIgnoreCase(rs.getString("TYPE_NAME")) || 
-                               "MEDIUMTEXT".equalsIgnoreCase(rs.getString("TYPE_NAME")))
+                        .scale(scale >= 0 ? scale : null)
+                        .isLob(isLobType(rs, dataType))
                         .build();
 
                 columns.add(column);
@@ -181,21 +187,17 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
         try (ResultSet rs = metaData.getImportedKeys(null, schemaName, tableName)) {
             while (rs.next()) {
                 ForeignKey foreignKey = ForeignKey.builder()
-                        .name(rs.getString("FK_NAME"))
-                        .fkTable(rs.getString("FKTABLE_NAME"))
+                        .constraintName(rs.getString("FK_NAME"))
                         .fkColumn(rs.getString("FKCOLUMN_NAME"))
                         .referencedTable(rs.getString("PKTABLE_NAME"))
                         .referencedColumn(rs.getString("PKCOLUMN_NAME"))
-                        .onDeleteAction(resolveAction(rs.getShort("DELETE_RULE")))
-                        .onUpdateAction(resolveAction(rs.getShort("UPDATE_RULE")))
+                        .nullable(true)
                         .onDeleteCascade(rs.getShort("DELETE_RULE") == DatabaseMetaData.importedKeyCascade)
                         .onUpdateCascade(rs.getShort("UPDATE_RULE") == DatabaseMetaData.importedKeyCascade)
                         .build();
 
                 foreignKeys.add(foreignKey);
             }
-
-
         } catch (SQLException e) {
             log.error("Error extracting foreign key for {}.{}", schemaName, tableName, e);
             throw new RuntimeException(e);
@@ -212,8 +214,11 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
             while (rs.next()) {
                 String indexName = rs.getString("INDEX_NAME");
                 String columnName = rs.getString("COLUMN_NAME");
+                boolean isUnique = !rs.getBoolean("NON_UNIQUE");
 
-                if (indexName == null || columnName == null) continue;
+                if (indexName == null || columnName == null || !isUnique) continue;
+
+                if ("PRIMARY".equalsIgnoreCase(indexName)) continue;
 
                 constraintMap.computeIfAbsent(indexName, k -> new ArrayList<>()).add(columnName);
             }
@@ -231,5 +236,18 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
         }
 
         return uniqueConstraints;
+    }
+
+    private void updateForeignKeys(List<ForeignKey> foreignKeys, List<Column> columns) {
+        Map<String, Column> columnMap = columns.stream()
+                .collect(Collectors.toMap(Column::getName, col -> col));
+
+        for (ForeignKey fk : foreignKeys) {
+            Column col = columnMap.get(fk.getFkColumn());
+            if (col != null) {
+                fk.setNullable(col.isNullable());
+                fk.setUnique(col.isUnique());
+            }
+        }
     }
 }

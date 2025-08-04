@@ -1,5 +1,6 @@
-package hr.lknezevic.entitygen.builder;
+package hr.lknezevic.entitygen.builder.relation;
 
+import hr.lknezevic.entitygen.builder.RelationBuilder;
 import hr.lknezevic.entitygen.enums.CollectionType;
 import hr.lknezevic.entitygen.enums.RelationType;
 import hr.lknezevic.entitygen.utils.NamingUtil;
@@ -9,10 +10,12 @@ import hr.lknezevic.entitygen.model.ForeignKey;
 import hr.lknezevic.entitygen.model.Table;
 import hr.lknezevic.entitygen.model.template.common.Entity;
 import hr.lknezevic.entitygen.model.template.common.Relation;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class ManyToManyRelationBuilder extends AbstractRelationBuilder {
 
     public ManyToManyRelationBuilder(RelationBuilder relationBuilder) {
@@ -20,7 +23,7 @@ public class ManyToManyRelationBuilder extends AbstractRelationBuilder {
     }
 
     @Override
-    protected List<Relation> buildSpecificRelations() {
+    public List<Relation> buildSpecificRelations() {
         List<Relation> relations = new ArrayList<>();
 
         for (Table candidateTable : getContext().getAllTables()) {
@@ -53,46 +56,31 @@ public class ManyToManyRelationBuilder extends AbstractRelationBuilder {
 
             // Provjeri da li postoji target entity
             Optional<Entity> targetEntityOpt = Optional.ofNullable(getContext().getEntityByTableName().get(targetTableName));
-            //Optional<Entity> targetEntityOpt = RelationDetector.findEntityByTableName(targetTableName, getContext().getAllEntities());
             if (targetEntityOpt.isEmpty()) continue;
 
             Entity targetEntity = targetEntityOpt.get();
-
-            // Generiraj MANY-TO-MANY samo ako junction nema additional data ili korisnik želi direktnu MANY-TO-MANY
             boolean hasAdditionalData = hasAdditionalDataColumns(candidateTable, junctionFKs);
 
             if (!hasAdditionalData) {
-                // Kreiraj pravu MANY_TO_MANY relaciju
-                Relation relation = buildManyToManyRelation(table, candidateTable, targetEntity, currentTableFKs, targetTableFKs);
+                // ✅ ČISTA JUNCTION TABLICA - Generiraj pravu @ManyToMany relaciju
+                Relation relation = buildPureManyToManyRelation(candidateTable, targetEntity, currentTableFKs, targetTableFKs);
 
-                // Provjeri duplikate
                 String relationKey = RelationDetector.generateRelationKey(
-                        table.getName(),
-                        targetTableName,
-                        RelationType.MANY_TO_MANY.name()
-                );
+                        table.getName(), targetTableName, RelationType.MANY_TO_MANY.name());
 
                 if (!getProcessedRelations().contains(relationKey)) {
                     relations.add(relation);
                     addProcessedRelation(relationKey);
+                    log.debug("Generated MANY_TO_MANY relation from {} to {} via junction table {}", 
+                             table.getName(), targetTableName, candidateTable.getName());
                 }
             } else {
-                // Ako ima additional data, kreiraj direktnu MANY_TO_MANY kao opciju
-                // Ovo omogućuje korisnicima da imaju direktnu vezu bez association entiteta
-                Relation directRelation = buildDirectManyToManyRelation(table, candidateTable, targetEntity, currentTableFKs, targetTableFKs);
-
-                String directRelationKey = RelationDetector.generateRelationKey(
-                        table.getName(),
-                        targetTableName,
-                        RelationType.MANY_TO_MANY_DIRECT.name()
-                );
-
-                if (!getProcessedRelations().contains(directRelationKey)) {
-                    relations.add(directRelation);
-                    addProcessedRelation(directRelationKey);
-                }
+                // ✅ JUNCTION TABLICA SA ADDITIONAL DATA
+                // Junction tablica će biti tretirana kao regularni entitet
+                // ONE_TO_MANY relacije prema association entity-u će biti generirane u drugim builderima
+                log.debug("Junction table {} has additional data - skipping Many-to-Many generation, will be handled as association entity", 
+                         candidateTable.getName());
             }
-            // Također ostavi ONE-TO-MANY prema junction entity-u za additional data
         }
 
         return relations;
@@ -118,10 +106,10 @@ public class ManyToManyRelationBuilder extends AbstractRelationBuilder {
     }
 
     /**
-     * Kreira MANY_TO_MANY relaciju
+     * Kreira čistu MANY_TO_MANY relaciju za junction tablice bez additional data
      */
-    private Relation buildManyToManyRelation(Table sourceTable, Table junctionTable, Entity targetEntity,
-                                             List<ForeignKey> currentFKs, List<ForeignKey> targetFKs) {
+    private Relation buildPureManyToManyRelation(Table junctionTable, Entity targetEntity,
+                                                 List<ForeignKey> currentFKs, List<ForeignKey> targetFKs) {
 
         List<String> joinColumns = currentFKs.stream()
                 .map(ForeignKey::getFkColumn)
@@ -142,18 +130,6 @@ public class ManyToManyRelationBuilder extends AbstractRelationBuilder {
                 .map(ForeignKey::getReferencedColumn)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-
-        // Determiniraj collection type - koristi config override ili pametnu logiku
-        CollectionType resolvedCollectionType = getCollectionType(junctionTable.getName(), currentFKs);
-        
-        // Dodatna provjera za unique constrainte - ako su svi FK unique, koristi SET
-        if (resolvedCollectionType == CollectionType.LIST) {
-            boolean allFKsUnique = currentFKs.stream().allMatch(ForeignKey::isUnique) && 
-                                  targetFKs.stream().allMatch(ForeignKey::isUnique);
-            if (allFKsUnique) {
-                resolvedCollectionType = CollectionType.SET;
-            }
-        }
 
         return Relation.builder()
                 .type(RelationType.MANY_TO_MANY)
@@ -162,55 +138,12 @@ public class ManyToManyRelationBuilder extends AbstractRelationBuilder {
                 .fetchType(getFetchType())
                 .cascadeType(getCascadeType(RelationType.MANY_TO_MANY))
                 .orphanRemoval(getOrphanRemoval(RelationType.MANY_TO_MANY))
-                .collectionType(resolvedCollectionType)
+                .collectionType(CollectionType.LINKED_HASH_SET)
                 .joinTableName(junctionTable.getName())
                 .joinColumns(joinColumns)
                 .referencedColumns(joinReferencedColumns)
                 .inverseJoinColumns(inverseJoinColumns)
                 .inverseReferencedColumns(inverseReferencedColumns)
-                .build();
-    }
-
-    /**
-     * Kreira direktnu MANY_TO_MANY relaciju (bypasses association entity)
-     */
-    private Relation buildDirectManyToManyRelation(Table sourceTable, Table junctionTable, Entity targetEntity,
-                                                   List<ForeignKey> currentFKs, List<ForeignKey> targetFKs) {
-
-        List<String> joinColumns = currentFKs.stream()
-                .map(ForeignKey::getFkColumn)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        List<String> joinReferencedColumns = currentFKs.stream()
-                .map(ForeignKey::getReferencedColumn)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        List<String> inverseJoinColumns = targetFKs.stream()
-                .map(ForeignKey::getFkColumn)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        List<String> inverseReferencedColumns = targetFKs.stream()
-                .map(ForeignKey::getReferencedColumn)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        return Relation.builder()
-                .type(RelationType.MANY_TO_MANY_DIRECT)
-                .targetEntityClass(targetEntity.getClassName())
-                .fieldName(NamingUtil.generateFieldName(targetEntity.getClassName(), RelationType.MANY_TO_MANY_DIRECT, true))
-                .fetchType(getFetchType())
-                .cascadeType(getCascadeType(RelationType.MANY_TO_MANY_DIRECT))
-                .orphanRemoval(getOrphanRemoval(RelationType.MANY_TO_MANY_DIRECT))
-                .collectionType(CollectionType.SET) // Always use SET for direct relationships
-                .joinTableName(junctionTable.getName())
-                .joinColumns(joinColumns)
-                .referencedColumns(joinReferencedColumns)
-                .inverseJoinColumns(inverseJoinColumns)
-                .inverseReferencedColumns(inverseReferencedColumns)
-                .isDirectManyToMany(true)
                 .build();
     }
 }

@@ -1,41 +1,32 @@
 package hr.lknezevic.entitygen.model.template.models;
 
-import hr.lknezevic.entitygen.config.UserConfig;
-import hr.lknezevic.entitygen.enums.ComponentType;
-import hr.lknezevic.entitygen.model.template.common.Entity;
+import hr.lknezevic.entitygen.model.template.TemplateFactory;
+import hr.lknezevic.entitygen.model.template.TemplateConst;
+import hr.lknezevic.entitygen.model.template.TemplateProviderObject;
+import hr.lknezevic.entitygen.utils.TemplateUtil;
+import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-public class RepositoryTemplateModel extends TemplateModel {
 
-    public RepositoryTemplateModel(ComponentType componentType, Entity entity, UserConfig config, List<String> imports, Map<String, Entity> entityByClassName) {
-        super(componentType, entity, config, imports, entityByClassName);
-    }
+@Getter
+public class RepositoryTemplateModel extends AbstractTemplateModel {
 
-    public String getEntityName() {
-        return entity.getClassName() + getComponentSuffix(ComponentType.ENTITY);
+    public RepositoryTemplateModel(TemplateProviderObject tpo, List<String> imports) {
+        super(tpo.componentType(), tpo.entity(), tpo.userConfig(), tpo.entityByClassName(), imports);
     }
 
     @Override
-    public List<String> getAllImports() {
-        List<String> allImports = new ArrayList<>(imports);
-        allImports.add(config.getEntityPackage() + "." + getEntityName());
-        if (entity.isCompositeKey() && entity.getEmbeddedId() != null)
-            allImports.add(config.getEntityPackage() + "." + entity.getEmbeddedId().getClassName());
-
-        return allImports;
+    public String getModelBody() {
+        return TemplateFactory.builder()
+                .template(TemplateConst.REPOSITORY_IMPLEMENTATION)
+                .build()
+                .addParams(getComponentName(), getEntityName(), getIdType())
+                .format();
     }
 
-    public String getIdType() {
-        String primaryKey;
-        if (entity.isCompositeKey() && entity.getEmbeddedId() != null)
-            primaryKey = entity.getEmbeddedId().getClassName();
-        else
-            primaryKey = entity.getPrimaryKeyFields().getFirst().getJavaType();
-
-        return primaryKey;
+    private String getIdType() {
+        return TemplateUtil.getEntityIdType(entity);
     }
 
 }

@@ -70,6 +70,7 @@ public enum TemplateImport {
 
     // Java SE - IO & NIO (order 1)
     JAVA_SERIALIZABLE(1, "java.io.Serializable"),
+    JAVA_SERIAL(1, "java.io.Serial"),
     JAVA_FILE(1, "java.io.File"),
     JAVA_PATH(1, "java.nio.file.Path"),
     JAVA_PATHS(1, "java.nio.file.Paths"),
@@ -125,6 +126,7 @@ public enum TemplateImport {
     JPA_CASCADE_TYPE(2, "jakarta.persistence.CascadeType"),
     JPA_FETCH_TYPE(2, "jakarta.persistence.FetchType"),
     JPA_ORPHAN_REMOVAL(2, "jakarta.persistence.OrphanRemoval"),
+    JPA_MAPS_ID(2, "jakarta.persistence.MapsId"),
     
     // Jakarta EE - Validation (order 2)
     JAKARTA_NOT_NULL(2, "jakarta.validation.constraints.NotNull"),

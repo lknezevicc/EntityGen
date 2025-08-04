@@ -43,7 +43,9 @@ public class UserConfigProperties {
     public UserConfig createUserConfig() {
         UserConfig.UserConfigBuilder builder = UserConfig.builder();
         builder.entityPackage(basePackage + ".entity");
+        builder.embeddablePackage(basePackage + ".embeddable");
         builder.servicePackage(basePackage + ".service");
+        builder.serviceImplPackage(basePackage + ".service.impl");
         builder.controllerPackage(basePackage + ".controller");
         builder.repositoryPackage(basePackage + ".repository");
         builder.dtoPackage(basePackage + ".dto");

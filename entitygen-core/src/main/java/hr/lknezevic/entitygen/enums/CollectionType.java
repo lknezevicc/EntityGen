@@ -6,10 +6,7 @@ import lombok.Getter;
 public enum CollectionType {
     LIST("List"),
     SET("Set"),
-    SORTED_SET("SortedSet"),
-    LINKED_HASH_SET("LinkedHashSet"),
-    MAP("Map"),
-    COLLECTION("Collection"),;
+    LINKED_HASH_SET("LinkedHashSet");
 
     private final String value;
 

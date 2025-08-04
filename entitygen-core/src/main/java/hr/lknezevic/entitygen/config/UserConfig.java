@@ -17,10 +17,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserConfig {
     // === Package Structure ===
+    private String embeddablePackage;
     private String entityPackage;
     private String dtoPackage;
     private String repositoryPackage;
     private String servicePackage;
+    private String serviceImplPackage;
     private String controllerPackage;
     private String outputDirectory;
 
@@ -37,6 +39,9 @@ public class UserConfig {
 
     // === Naming Conventions ===
     @Builder.Default
+    private String embeddableSuffix = "Id";
+
+    @Builder.Default
     private String entitySuffix = "";
     
     @Builder.Default
@@ -47,6 +52,9 @@ public class UserConfig {
     
     @Builder.Default
     private String serviceSuffix = "Service";
+
+    @Builder.Default
+    private String serviceImplSuffix = "ServiceImpl";
     
     @Builder.Default
     private String controllerSuffix = "Controller";

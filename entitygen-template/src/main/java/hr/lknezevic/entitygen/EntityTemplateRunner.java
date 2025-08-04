@@ -2,8 +2,8 @@ package hr.lknezevic.entitygen;
 
 import hr.lknezevic.entitygen.builder.RelationBuilder;
 import hr.lknezevic.entitygen.config.UserConfig;
-import hr.lknezevic.entitygen.helper.relation.RelationContext;
 import hr.lknezevic.entitygen.helper.TemplateRunnerHelper;
+import hr.lknezevic.entitygen.model.RelationContext;
 import hr.lknezevic.entitygen.mapper.DefaultEntityModelMapper;
 import hr.lknezevic.entitygen.mapper.EntityModelMapper;
 import hr.lknezevic.entitygen.model.Table;
@@ -60,15 +60,15 @@ public class EntityTemplateRunner {
         }
 
         Map<String, Entity> entityByClassName = new HashMap<>();
-        entityByClassName.putAll(relationContext.getEntityByTableName().values().stream()
+        entityByClassName.putAll(relationContext.getEntityByTableName()
+                .values()
+                .stream()
                 .collect(java.util.stream.Collectors.toMap(
                         Entity::getClassName,
                         e -> e,
                         (existing, replacement) -> existing
-                )));
-
-
-        log.info("Entiteti {}", relationContext.getAllEntities());
+                ))
+        );
 
         for (Entity entity : relationContext.getAllEntities()) {
             templateRunnerHelper.generateComponents(entity, entityByClassName);

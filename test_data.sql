@@ -135,34 +135,3 @@ INSERT INTO poruka (sadrzaj, posiljatelj_ime, posiljatelj_domena) VALUES
 ('Maja odgovara', 'maja', 'gmail.com'),
 ('Ivo se javlja ponovo', 'ivo', 'outlook.com'),
 ('Admin poruka 2', 'admin', 'company.hr');
-
--- Provjera unesenih podataka
-SELECT 'OSOBA I ADRESA (ONE TO ONE)' as tip_relacije;
-SELECT o.id, o.ime, a.ulica 
-FROM osoba o 
-LEFT JOIN adresa a ON o.id = a.id;
-
-SELECT 'ODJEL I ZAPOSLENICI (ONE TO MANY)' as tip_relacije;
-SELECT o.naziv as odjel, GROUP_CONCAT(z.ime) as zaposlenici
-FROM odjel o 
-LEFT JOIN zaposlenik z ON o.id = z.odjel_id 
-GROUP BY o.id, o.naziv;
-
-SELECT 'STUDENTI I KOLEGIJI (MANY TO MANY)' as tip_relacije;
-SELECT s.ime as student, GROUP_CONCAT(k.naziv) as kolegiji
-FROM student s
-LEFT JOIN upisi u ON s.id = u.student_id
-LEFT JOIN kolegij k ON u.kolegij_id = k.id
-GROUP BY s.id, s.ime;
-
-SELECT 'KATEGORIJE (SELF REFERENCING)' as tip_relacije;
-SELECT k1.naziv as kategorija, k2.naziv as nadkategorija
-FROM kategorija k1
-LEFT JOIN kategorija k2 ON k1.id_nadkategorija = k2.id
-ORDER BY k1.id;
-
-SELECT 'KORISNICI I PORUKE (KOMPOZITNI KLJUČ)' as tip_relacije;
-SELECT CONCAT(k.korisnicko_ime, '@', k.domena) as korisnik, COUNT(p.id) as broj_poruka
-FROM korisnik k
-LEFT JOIN poruka p ON k.korisnicko_ime = p.posiljatelj_ime AND k.domena = p.posiljatelj_domena
-GROUP BY k.korisnicko_ime, k.domena;

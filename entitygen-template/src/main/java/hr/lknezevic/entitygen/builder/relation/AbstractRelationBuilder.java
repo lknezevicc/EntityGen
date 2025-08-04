@@ -1,19 +1,19 @@
-package hr.lknezevic.entitygen.builder;
+package hr.lknezevic.entitygen.builder.relation;
 
+import hr.lknezevic.entitygen.builder.RelationBuilder;
 import hr.lknezevic.entitygen.enums.CascadeType;
 import hr.lknezevic.entitygen.enums.CollectionType;
 import hr.lknezevic.entitygen.enums.FetchType;
 import hr.lknezevic.entitygen.enums.RelationType;
 import hr.lknezevic.entitygen.helper.relation.RelationConfigHelper;
-import hr.lknezevic.entitygen.helper.relation.RelationContext;
+import hr.lknezevic.entitygen.model.RelationContext;
 import hr.lknezevic.entitygen.model.ForeignKey;
 import hr.lknezevic.entitygen.model.Table;
-import hr.lknezevic.entitygen.model.template.common.Relation;
 
 import java.util.List;
 import java.util.Set;
 
-public abstract class AbstractRelationBuilder {
+public abstract class AbstractRelationBuilder implements RelationAnalyzer {
     private final RelationBuilder parent;
     protected final Table table;
 
@@ -21,8 +21,6 @@ public abstract class AbstractRelationBuilder {
         this.parent = parent;
         this.table = parent.getTable();
     }
-
-    protected abstract List<Relation> buildSpecificRelations();
 
     protected RelationContext getContext() {
         return parent.getRelationContext();
@@ -40,7 +38,6 @@ public abstract class AbstractRelationBuilder {
         return parent.getProcessedRelations().contains(relationKey);
     }
 
-    // Helper methods za dobivanje smart config vrijednosti
     protected FetchType getFetchType() {
         return RelationConfigHelper.getFetchType();
     }
@@ -53,7 +50,7 @@ public abstract class AbstractRelationBuilder {
         return RelationConfigHelper.getOrphanRemoval(relationType);
     }
     
-    protected CollectionType getCollectionType(String tableName, List<ForeignKey> foreignKeys) {
-        return RelationConfigHelper.getCollectionType(tableName, foreignKeys);
+    protected CollectionType getCollectionType(List<ForeignKey> foreignKeys) {
+        return RelationConfigHelper.getCollectionType(foreignKeys);
     }
 }

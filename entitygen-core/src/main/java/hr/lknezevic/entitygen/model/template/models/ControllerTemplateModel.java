@@ -1,45 +1,26 @@
 package hr.lknezevic.entitygen.model.template.models;
 
-import hr.lknezevic.entitygen.config.UserConfig;
-import hr.lknezevic.entitygen.enums.ComponentType;
-import hr.lknezevic.entitygen.model.template.common.Entity;
+import hr.lknezevic.entitygen.model.template.TemplateConst;
+import hr.lknezevic.entitygen.model.template.TemplateFactory;
+import hr.lknezevic.entitygen.model.template.TemplateProviderObject;
+import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-public class ControllerTemplateModel extends TemplateModel {
+@Getter
+public class ControllerTemplateModel extends AbstractTemplateModel {
 
-    public ControllerTemplateModel(ComponentType componentType, Entity entity, UserConfig config, List<String> imports, Map<String, Entity> entityByClassName) {
-        super(componentType, entity, config, imports, entityByClassName);
-    }
-
-    public String getControllerName() {
-        return entity.getClassName() + getComponentSuffix(ComponentType.CONTROLLER);
-    }
-
-    public String getServiceName() {
-        return entity.getClassName() + getComponentSuffix(ComponentType.SERVICE);
-    }
-
-    public String getDtoName() {
-        return entity.getClassName() + getComponentSuffix(ComponentType.DTO);
+    public ControllerTemplateModel(TemplateProviderObject tpo, List<String> imports) {
+        super(tpo.componentType(), tpo.entity(), tpo.userConfig(), tpo.entityByClassName(), imports);
     }
 
     @Override
-    public List<String> getAllImports() {
-        List<String> allImports = new ArrayList<>(imports);
-        allImports.addAll(addAdditionalImports());
-
-        return allImports;
+    public String getModelBody() {
+        return TemplateFactory.builder()
+                .template(TemplateConst.CONTROLLER_GET_ALL)
+                .build()
+                .addParams(getDtoName(), getDtoName())
+                .format();
     }
 
-    private List<String> addAdditionalImports() {
-        List<String> imports = new ArrayList<>();
-        imports.add(config.getServicePackage() + "." + getServiceName());
-        imports.add(config.getDtoPackage() + "." + getDtoName());
-        imports.sort(String::compareTo);
-
-        return imports;
-    }
 }
