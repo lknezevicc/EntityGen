@@ -68,8 +68,7 @@ public abstract class AbstractImportAnalyzer implements ImportAnalyzer {
         List<String> result = new ArrayList<>();
         List<Integer> keys = new ArrayList<>(map.keySet());
 
-        for (int i = 0; i < keys.size(); i++) {
-            Integer orderKey = keys.get(i);
+        for (Integer orderKey : keys) {
             List<TemplateImport> group = map.get(orderKey);
 
             List<String> sorted = group.stream()
@@ -78,10 +77,6 @@ public abstract class AbstractImportAnalyzer implements ImportAnalyzer {
                     .toList();
 
             result.addAll(sorted);
-
-//            if (i < keys.size() - 1) {
-//                result.add("");
-//            }
 
             result.add("");
         }
@@ -94,7 +89,7 @@ public abstract class AbstractImportAnalyzer implements ImportAnalyzer {
         return otherImports.stream().sorted(String::compareTo).toList();
     }
 
-    private TemplateImport findImportForJavaType(String javaType) {
+    TemplateImport findImportForJavaType(String javaType) {
         return switch (javaType) {
             case "BigDecimal" -> TemplateImport.JAVA_BIG_DECIMAL;
             case "BigInteger" -> TemplateImport.JAVA_BIG_INTEGER;

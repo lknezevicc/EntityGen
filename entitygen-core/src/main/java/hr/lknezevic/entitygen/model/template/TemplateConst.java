@@ -162,6 +162,7 @@ public class TemplateConst {
     public static final String COLUMN_PARAM_LENGTH = "length = %d";
     public static final String COLUMN_PARAM_PRECISION = "precision = %d";
     public static final String COLUMN_PARAM_SCALE = "scale = %d";
+    public static final String COLUMN_PARAM_LENGTH_LARGE = "columnDefinition = \"TEXT\"";
     
     // ========================================
     // RELATION PARAMETERS

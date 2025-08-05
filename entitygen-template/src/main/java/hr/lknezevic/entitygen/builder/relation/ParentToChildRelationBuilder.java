@@ -77,7 +77,7 @@ public class ParentToChildRelationBuilder extends AbstractRelationBuilder {
                 .type(relationType)
                 .targetEntityClass(targetEntity.getClassName())
                 .fieldName(generateSelfReferencingFieldName(targetEntity.getClassName(), relationType, isSelfReferencing))
-                .optional(!sample.isNullable())
+                // .optional(sample.isNullable())
                 .fetchType(getFetchType())
                 .cascadeType(RelationConfigHelper.getCascadeTypeFromConstraints(sample, relationType))
                 .orphanRemoval(getOrphanRemoval(relationType))

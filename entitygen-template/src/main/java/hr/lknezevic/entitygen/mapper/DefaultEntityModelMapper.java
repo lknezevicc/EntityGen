@@ -1,16 +1,15 @@
 package hr.lknezevic.entitygen.mapper;
 
 import hr.lknezevic.entitygen.config.UserConfig;
-import hr.lknezevic.entitygen.model.ForeignKey;
-import hr.lknezevic.entitygen.utils.NamingUtil;
 import hr.lknezevic.entitygen.model.Column;
+import hr.lknezevic.entitygen.model.ForeignKey;
 import hr.lknezevic.entitygen.model.Table;
 import hr.lknezevic.entitygen.model.template.common.EmbeddedId;
 import hr.lknezevic.entitygen.model.template.common.Entity;
 import hr.lknezevic.entitygen.model.template.common.Field;
+import hr.lknezevic.entitygen.utils.NamingUtil;
 import lombok.RequiredArgsConstructor;
 
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -67,7 +66,7 @@ public class DefaultEntityModelMapper implements EntityModelMapper {
         return Field.builder()
                 .name(NamingUtil.toCamelCase(column.getName()))
                 .columnName(column.getName())
-                .javaType(resolveJavaTypeForId(column.getDataType(), column.getJavaType()))
+                .javaType(column.getJavaType())
                 .length(column.getLength())
                 .precision(column.getPrecision())
                 .scale(column.getScale())
@@ -90,12 +89,6 @@ public class DefaultEntityModelMapper implements EntityModelMapper {
                 .className(NamingUtil.generateEmbeddableClassName(tableName, userConfig))
                 .fields(pkFields)
                 .build();
-    }
-
-    private String resolveJavaTypeForId(Integer dataType, String currentIdType) {
-        if (userConfig.getPreferLongIds() && dataType.equals(Types.INTEGER)) return "Long";
-
-        return currentIdType;
     }
 
 }

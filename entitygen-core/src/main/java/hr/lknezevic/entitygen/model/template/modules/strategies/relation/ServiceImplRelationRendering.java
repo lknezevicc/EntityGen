@@ -25,14 +25,8 @@ public class ServiceImplRelationRendering implements RelationRenderingStrategy {
                     .addParams(relationFieldName, relationFieldName, targetIdFieldName)
                     .format();
         } else {
-            String collectionFormat = collectionType == CollectionType.SET
-                    ? relation.getType() == RelationType.MANY_TO_MANY
-                        ? TemplateConst.SERVICE_RELATION_LINKED_HASH_SET
-                        : TemplateConst.SERVICE_RELATION_SET
-                    : TemplateConst.SERVICE_RELATION_LIST;
-
             return TemplateFactory.builder()
-                    .template(collectionFormat)
+                    .template(TemplateConst.SERVICE_RELATION_LIST)
                     .build()
                     .addParams(relationFieldName, relationFieldName, targetIdFieldName)
                     .format();

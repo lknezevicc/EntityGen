@@ -138,6 +138,11 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
                 log.debug("Found column: {}", columnName);
 
                 int dataType = rs.getInt("DATA_TYPE");
+                boolean isAutoIncrement = "YES".equalsIgnoreCase(rs.getString("IS_AUTOINCREMENT"));
+
+                if (isAutoIncrement && dataType == Types.INTEGER) {
+                    dataType = Types.BIGINT;
+                }
 
                 int columnSize = rs.getInt("COLUMN_SIZE");
                 int scale = rs.getInt("DECIMAL_DIGITS");
@@ -154,13 +159,16 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
                     precision = columnSize > 0 ? columnSize : null;
                 }
 
+                log.debug("Column {}: dataType={}, length={}, precision={}, scale={}, resolved JavaType {}",
+                        columnName, dataType, length, precision, scale, resolveJavaType(dataType, precision, scale));
+
                 Column column = Column.builder()
                         .name(columnName)
                         .dataType(dataType)
                         .javaType(resolveJavaType(dataType, precision, scale))
                         .nullable("YES".equalsIgnoreCase(rs.getString("IS_NULLABLE")))
                         .primaryKey(primaryKeys.contains(columnName))
-                        .autoIncrement("YES".equalsIgnoreCase(rs.getString("IS_AUTOINCREMENT")))
+                        .autoIncrement(isAutoIncrement)
                         .unique(uniqueColumns.contains(columnName))
                         .defaultValue(rs.getString("COLUMN_DEF"))
                         .comment(rs.getString("REMARKS"))

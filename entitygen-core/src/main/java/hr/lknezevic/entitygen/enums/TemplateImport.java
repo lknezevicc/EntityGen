@@ -122,7 +122,7 @@ public enum TemplateImport {
     JPA_JOIN_COLUMN(2, "jakarta.persistence.JoinColumn"),
     JPA_JOIN_COLUMNS(2, "jakarta.persistence.JoinColumns"),
     JPA_JOIN_TABLE(2, "jakarta.persistence.JoinTable"),
-    JPA_INVERSE_JOIN_COLUMN(2, "jakarta.persistence.InverseJoinColumn"),
+    //JPA_INVERSE_JOIN_COLUMN(2, "jakarta.persistence.InverseJoinColumn"),
     JPA_CASCADE_TYPE(2, "jakarta.persistence.CascadeType"),
     JPA_FETCH_TYPE(2, "jakarta.persistence.FetchType"),
     JPA_ORPHAN_REMOVAL(2, "jakarta.persistence.OrphanRemoval"),

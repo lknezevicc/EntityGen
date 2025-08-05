@@ -24,11 +24,10 @@ public class DtoRelationRendering implements RelationRenderingStrategy {
                     .addParams(targetIdType, fieldName)
                     .format();
         } else {
-            String collectionType = relation.getCollectionType() == CollectionType.SET ? "Set" : "List";
             return TemplateFactory.builder()
                     .template(TemplateConst.RELATION_FIELD_COLLECTION)
                     .build()
-                    .addParams(collectionType, targetIdType, fieldName)
+                    .addParams(CollectionType.LIST.getValue(), targetIdType, fieldName)
                     .format();
         }
 

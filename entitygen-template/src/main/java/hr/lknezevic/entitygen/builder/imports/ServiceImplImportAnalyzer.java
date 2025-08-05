@@ -1,6 +1,5 @@
 package hr.lknezevic.entitygen.builder.imports;
 
-import hr.lknezevic.entitygen.enums.CollectionType;
 import hr.lknezevic.entitygen.enums.ComponentType;
 import hr.lknezevic.entitygen.enums.RelationType;
 import hr.lknezevic.entitygen.enums.TemplateImport;
@@ -56,25 +55,7 @@ public class ServiceImplImportAnalyzer extends AbstractImportAnalyzer {
             return relationType == RelationType.ONE_TO_MANY || relationType == RelationType.MANY_TO_MANY;
         })) {
             imports.add(TemplateImport.JAVA_COLLECTORS);
+            imports.add(TemplateImport.JAVA_ARRAY_LIST);
         }
-
-        entity.getRelations().forEach(relation -> {
-            CollectionType collectionType = relation.getCollectionType();
-            if (collectionType == null) return;
-            switch (collectionType) {
-                case LIST -> {
-                    imports.add(TemplateImport.JAVA_LIST);
-                    imports.add(TemplateImport.JAVA_ARRAY_LIST);
-                }
-                case SET -> {
-                    imports.add(TemplateImport.JAVA_SET);
-                    imports.add(TemplateImport.JAVA_HASH_SET);
-                }
-                case LINKED_HASH_SET -> {
-                    imports.add(TemplateImport.JAVA_SET);
-                    imports.add(TemplateImport.JAVA_LINKED_HASH_SET);
-                }
-            }
-        });
     }
 }

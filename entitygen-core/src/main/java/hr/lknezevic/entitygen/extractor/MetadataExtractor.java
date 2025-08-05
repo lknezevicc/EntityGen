@@ -33,8 +33,11 @@ public interface MetadataExtractor {
             case Types.BOOLEAN -> "Boolean";
             case Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY, Types.BLOB -> "byte[]";
             case Types.BIT -> {
-                if (precision != null && precision == 1) yield "Boolean";
-                yield "byte[]";
+                if (precision != null && precision > 1) {
+                    yield "byte[]";
+                } else {
+                    yield "Boolean";
+                }
             }
 
             case Types.DATE -> "LocalDate";
@@ -47,12 +50,10 @@ public interface MetadataExtractor {
 
     default boolean isLobType(ResultSet rs, int dataType) throws SQLException {
         String typeName = rs.getString("TYPE_NAME");
+
         return dataType == Types.CLOB
-                || dataType == Types.LONGVARCHAR
-                || "TEXT".equalsIgnoreCase(typeName)
-                || "LONGTEXT".equalsIgnoreCase(typeName)
-                || "MEDIUMTEXT".equalsIgnoreCase(typeName)
-                || "NTEXT".equalsIgnoreCase(typeName)
+                || dataType == Types.NCLOB
+                || "CLOB".equalsIgnoreCase(typeName)
                 || "NCLOB".equalsIgnoreCase(typeName);
     }
 

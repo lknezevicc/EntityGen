@@ -167,6 +167,15 @@ public class AnnotationUtil {
             );
         }
 
+        if (!field.isLob() && field.getLength() != null && field.getLength() == 65535) {
+            params.add(
+                    TemplateFactory.builder()
+                            .template(TemplateConst.COLUMN_PARAM_LENGTH_LARGE)
+                            .build()
+                            .format()
+            );
+        }
+
         if (field.getPrecision() != null && field.getPrecision() > 0) {
             params.add(
                     TemplateFactory.builder()

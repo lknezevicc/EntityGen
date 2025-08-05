@@ -14,7 +14,7 @@ ${imp}
  */
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/${template.entity.tableName?lower_case}")
+@RequestMapping("/${template.entity.tableName?lower_case?replace("_", "-")}")
 public class ${template.controllerName} {
 
     private final ${template.serviceName} service;

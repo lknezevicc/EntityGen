@@ -7,6 +7,8 @@ import hr.lknezevic.entitygen.model.template.common.Entity;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class TemplateUtil {
 
@@ -80,7 +82,9 @@ public class TemplateUtil {
     }
 
     public static String joinParams(String delimiter, String ...params) {
-        return String.join(delimiter, params);
+        return Arrays.stream(params)
+                .filter(param -> param != null && !param.isEmpty())
+                .collect(Collectors.joining(delimiter));
     }
 
     public static String formatOptionalParameters(String... params) {

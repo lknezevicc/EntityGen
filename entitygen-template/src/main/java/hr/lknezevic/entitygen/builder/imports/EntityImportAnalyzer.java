@@ -1,5 +1,6 @@
 package hr.lknezevic.entitygen.builder.imports;
 
+import hr.lknezevic.entitygen.enums.CollectionType;
 import hr.lknezevic.entitygen.enums.ComponentType;
 import hr.lknezevic.entitygen.enums.RelationType;
 import hr.lknezevic.entitygen.enums.TemplateImport;
@@ -28,8 +29,7 @@ public class EntityImportAnalyzer extends AbstractImportAnalyzer {
                 TemplateImport.LOMBOK_ALL_ARGS_CONSTRUCTOR,
                 TemplateImport.LOMBOK_BUILDER,
                 TemplateImport.JPA_ENTITY,
-                TemplateImport.JPA_TABLE,
-                TemplateImport.JPA_COLUMN
+                TemplateImport.JPA_TABLE
         ));
 
         if (hasAdditionalImports())
@@ -42,9 +42,7 @@ public class EntityImportAnalyzer extends AbstractImportAnalyzer {
     protected void analyzeAdditionalImports() {
         super.analyzeFields();
         this.analyzeFields();
-        super.analyzeRelations();
         this.analyzeRelations();
-        analyzeRelationByType();
     }
 
     @Override
@@ -55,6 +53,10 @@ public class EntityImportAnalyzer extends AbstractImportAnalyzer {
     @Override
     protected void analyzeFields() {
         if (entity.getFields().isEmpty()) return;
+
+        if (entity.getFields().size() - entity.getPrimaryKeyFields().size() > 0) {
+            imports.add(TemplateImport.JPA_COLUMN);
+        }
 
         if (!entity.getUniqueConstraints().isEmpty())
             imports.add(TemplateImport.JPA_UNIQUE_CONSTRAINT);
@@ -82,12 +84,26 @@ public class EntityImportAnalyzer extends AbstractImportAnalyzer {
     protected void analyzeRelations() {
         if (entity.getRelations().isEmpty()) return;
 
-        log.debug("Entity {} has {} relations", entity.getClassName(), entity.getRelations().size());
+        analyzeRelationByType();
+
         entity.getRelations().forEach(relation -> {
-            log.debug("Analyzing relation: {}", relation.getType());
-            log.debug("Relation target entity: {}", relation.getTargetEntityClass());
-            if (!relation.getJoinColumns().isEmpty())
-                log.debug("Relation join columns: {}", relation.getJoinColumns());
+            CollectionType collectionType = relation.getCollectionType();
+            if (collectionType == null) return;
+
+            switch (collectionType) {
+                case LIST -> {
+                    imports.add(TemplateImport.JAVA_LIST);
+                    imports.add(TemplateImport.JAVA_ARRAY_LIST);
+                }
+                case SET -> {
+                    imports.add(TemplateImport.JAVA_SET);
+                    imports.add(TemplateImport.JAVA_HASH_SET);
+                }
+                case LINKED_HASH_SET -> {
+                    imports.add(TemplateImport.JAVA_SET);
+                    imports.add(TemplateImport.JAVA_LINKED_HASH_SET);
+                }
+            }
         });
 
         if (entity.getRelations().stream().anyMatch(relation -> !relation.getJoinColumns().isEmpty())) {
@@ -112,9 +128,7 @@ public class EntityImportAnalyzer extends AbstractImportAnalyzer {
 
         relationTypes.forEach(relationType -> {
             switch (relationType) {
-                case ONE_TO_ONE -> {
-                    imports.add(TemplateImport.JPA_ONE_TO_ONE);
-                }
+                case ONE_TO_ONE -> imports.add(TemplateImport.JPA_ONE_TO_ONE);
 
                 case ONE_TO_MANY -> {
                     imports.add(TemplateImport.JPA_ONE_TO_MANY);
@@ -122,14 +136,12 @@ public class EntityImportAnalyzer extends AbstractImportAnalyzer {
                     imports.add(TemplateImport.JAVA_ARRAY_LIST);
                 }
 
-                case MANY_TO_ONE -> {
-                    imports.add(TemplateImport.JPA_MANY_TO_ONE);
-                }
+                case MANY_TO_ONE -> imports.add(TemplateImport.JPA_MANY_TO_ONE);
 
                 case MANY_TO_MANY -> {
                     imports.add(TemplateImport.JPA_MANY_TO_MANY);
                     imports.add(TemplateImport.JPA_JOIN_TABLE);
-                    imports.add(TemplateImport.JPA_INVERSE_JOIN_COLUMN);
+                    //imports.add(TemplateImport.JPA_INVERSE_JOIN_COLUMN);
                     imports.add(TemplateImport.JAVA_LINKED_HASH_SET);
                 }
             }

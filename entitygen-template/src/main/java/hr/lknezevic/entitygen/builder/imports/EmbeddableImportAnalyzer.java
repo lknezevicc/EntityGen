@@ -33,7 +33,21 @@ public class EmbeddableImportAnalyzer extends AbstractImportAnalyzer {
 
     @Override
     protected void analyzeAdditionalImports() {
-        analyzeFields();
+        this.analyzeFields();
+    }
+
+    @Override
+    protected void analyzeFields() {
+        if (entity.getFields().isEmpty()) return;
+
+        imports.add(TemplateImport.JPA_COLUMN);
+
+        entity.getPrimaryKeyFields().forEach(field -> {
+            TemplateImport typeImport = findImportForJavaType(field.getJavaType());
+            if (typeImport != null) {
+                imports.add(typeImport);
+            }
+        });
     }
 
     @Override

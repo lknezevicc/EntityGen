@@ -26,12 +26,13 @@ public class RelationRenderingUtil {
         List<String> params = new ArrayList<>();
         
         addMappedBy(params, relation);
-        addFetchType(params, relation);
-        addCascadeType(params, relation);
-        
-        if (relation.getOptional() != null && !relation.getOptional() && relation.getMappedBy() == null) {
-            addOptional(params, relation);
+
+        if (relation.getMappedBy() == null) {
+            addFetchType(params, relation);
         }
+
+        addCascadeType(params, relation);
+        addOptional(params, relation);
         
         addOrphanRemoval(params, relation);
         
