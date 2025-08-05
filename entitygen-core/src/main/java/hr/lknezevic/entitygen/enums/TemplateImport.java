@@ -2,6 +2,12 @@ package hr.lknezevic.entitygen.enums;
 
 import lombok.Getter;
 
+/**
+ * Enum representing import for Java and other libraries.
+ * The order determines the priority of imports when generating code.
+ *
+ * @author leonknezevic
+ */
 @Getter
 public enum TemplateImport {
     // Java SE - Core Types (order 1)
@@ -122,7 +128,6 @@ public enum TemplateImport {
     JPA_JOIN_COLUMN(2, "jakarta.persistence.JoinColumn"),
     JPA_JOIN_COLUMNS(2, "jakarta.persistence.JoinColumns"),
     JPA_JOIN_TABLE(2, "jakarta.persistence.JoinTable"),
-    //JPA_INVERSE_JOIN_COLUMN(2, "jakarta.persistence.InverseJoinColumn"),
     JPA_CASCADE_TYPE(2, "jakarta.persistence.CascadeType"),
     JPA_FETCH_TYPE(2, "jakarta.persistence.FetchType"),
     JPA_ORPHAN_REMOVAL(2, "jakarta.persistence.OrphanRemoval"),

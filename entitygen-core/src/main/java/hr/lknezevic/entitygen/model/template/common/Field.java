@@ -3,6 +3,13 @@ package hr.lknezevic.entitygen.model.template.common;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * Represents a field in the context of a database entity.
+ * Contains metadata about the field such as its name, column name,
+ * Java type, length, precision, scale, and various constraints.
+ *
+ * @author leonknezevic
+ */
 @Data
 @Builder
 public class Field {

@@ -3,13 +3,12 @@ package hr.lknezevic.entitygen;
 import hr.lknezevic.entitygen.builder.RelationBuilder;
 import hr.lknezevic.entitygen.config.UserConfig;
 import hr.lknezevic.entitygen.helper.TemplateRunnerHelper;
-import hr.lknezevic.entitygen.model.RelationContext;
 import hr.lknezevic.entitygen.mapper.DefaultEntityModelMapper;
 import hr.lknezevic.entitygen.mapper.EntityModelMapper;
+import hr.lknezevic.entitygen.model.RelationContext;
 import hr.lknezevic.entitygen.model.Table;
 import hr.lknezevic.entitygen.model.template.common.Entity;
 import hr.lknezevic.entitygen.model.template.common.Relation;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -27,7 +26,7 @@ import java.util.Map;
  * </ul>
  * <p>
  * 
- * @author Leon Knežević
+ * @author leonknezevic
  */
 @Slf4j
 public class EntityTemplateRunner {
@@ -35,7 +34,7 @@ public class EntityTemplateRunner {
     private final TemplateRunnerHelper templateRunnerHelper;
     private final EntityModelMapper entityModelMapper;
 
-    public EntityTemplateRunner(@NonNull List<Table> tables, @NonNull UserConfig userConfig) {
+    public EntityTemplateRunner(List<Table> tables, UserConfig userConfig) {
         this.tables = tables;
         this.templateRunnerHelper = new TemplateRunnerHelper(userConfig);
         this.entityModelMapper = new DefaultEntityModelMapper(userConfig);
@@ -43,8 +42,8 @@ public class EntityTemplateRunner {
 
     /**
      * Generates all configured components for the provided tables.
-     * Generated components depend on {@link UserConfig} settings. By default, only entities
-     * and repositories are generated.
+     * Generated components depend on {@link UserConfig} settings.
+     *
      */
     public void generateComponents() {
         List<Entity> entities = entityModelMapper.mapEntities(tables);

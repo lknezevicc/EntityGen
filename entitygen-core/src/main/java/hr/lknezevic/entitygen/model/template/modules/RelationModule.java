@@ -8,6 +8,12 @@ import hr.lknezevic.entitygen.model.template.modules.strategies.RelationRenderin
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Represents a module that constructs a relation between entities.
+ * It uses a rendering strategy based on the component type to generate the relation representation.
+ *
+ * @author leonknezevic
+ */
 @Builder
 @RequiredArgsConstructor
 public class RelationModule implements ModuleBuilder {

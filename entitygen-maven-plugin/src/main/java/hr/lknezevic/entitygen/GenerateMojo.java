@@ -28,7 +28,7 @@ public class GenerateMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException {
         getLog().info("EntityGen running...");
 
-        UserConfig userConfig = UserConfig.builder().build();
+        UserConfig userConfig = UserConfig.defaultConfig();
         try {
             userConfig = new UserConfigProperties(springConfigPath, basePackage).createUserConfig();
         } catch (IOException e) {
@@ -36,7 +36,7 @@ public class GenerateMojo extends AbstractMojo {
             getLog().info("Using default properties");
         }
 
-        EntityGenRunner entityGenRunner = new EntityGenRunner(springConfigPath, activeProfile);
+        EntityGenRunner entityGenRunner = new EntityGenRunner(userConfig, springConfigPath, activeProfile);
         List<Schema> schemas = entityGenRunner.generate();
 
         EntityTemplateRunner entityTemplateRunner = new EntityTemplateRunner(schemas.getLast().getTables(), userConfig);

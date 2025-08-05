@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Utility class for creating formatted strings based on a template and parameters.
+ *
+ * @author leonknezevic
+ */
 public class TemplateFactory {
     private final String template;
     private final List<Object> params = new ArrayList<>();

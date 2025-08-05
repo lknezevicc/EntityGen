@@ -2,6 +2,11 @@ package hr.lknezevic.entitygen.enums;
 
 import lombok.Getter;
 
+/**
+ * Enum representing different collection types.
+ *
+ * @author leonknezevic
+ */
 @Getter
 public enum CollectionType {
     LIST("List"),

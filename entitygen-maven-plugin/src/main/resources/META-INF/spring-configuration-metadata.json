@@ -1,154 +1,39 @@
 {
   "properties": [
     {
+      "name": "entitygen.package.embeddable",
+      "type": "java.lang.String",
+      "description": "Package for generated embeddable ID classes"
+    },
+    {
       "name": "entitygen.package.entity",
       "type": "java.lang.String",
-      "description": "Package for generated entity classes",
-      "defaultValue": "com.example.entity"
+      "description": "Package for generated entity classes"
     },
     {
       "name": "entitygen.package.dto",
       "type": "java.lang.String",
-      "description": "Package for generated DTO classes",
-      "defaultValue": "com.example.dto"
+      "description": "Package for generated DTO classes"
     },
     {
       "name": "entitygen.package.repository",
       "type": "java.lang.String",
-      "description": "Package for generated repository interfaces",
-      "defaultValue": "com.example.repository"
+      "description": "Package for generated repository interfaces"
     },
     {
       "name": "entitygen.package.service",
       "type": "java.lang.String",
-      "description": "Package for generated service classes",
-      "defaultValue": "com.example.service"
+      "description": "Package for generated service interfaces"
+    },
+    {
+      "name": "entitygen.package.service-impl",
+      "type": "java.lang.String",
+      "description": "Package for generated service implementation classes"
     },
     {
       "name": "entitygen.package.controller",
       "type": "java.lang.String",
-      "description": "Package for generated controller classes",
-      "defaultValue": "com.example.controller"
-    },
-    {
-      "name": "entitygen.serialization.enable",
-      "type": "java.lang.Boolean",
-      "description": "Enable Serializable interface implementation for entities",
-      "defaultValue": true
-    },
-    {
-      "name": "entitygen.serialization.generate-version",
-      "type": "java.lang.Boolean",
-      "description": "Generate serialVersionUID field for Serializable entities",
-      "defaultValue": true
-    },
-    {
-      "name": "entitygen.entity.lombok.enable",
-      "type": "java.lang.Boolean",
-      "description": "Enable Lombok annotations for generated entities",
-      "defaultValue": true
-    },
-    {
-      "name": "entitygen.naming.entity.suffix",
-      "type": "java.lang.String",
-      "description": "Suffix for entity class names (e.g., Entity, Model, or empty string)",
-      "defaultValue": ""
-    },
-    {
-      "name": "entitygen.naming.dto.suffix",
-      "type": "java.lang.String",
-      "description": "Suffix for DTO class names (e.g., Dto, Response, Request)",
-      "defaultValue": "Dto"
-    },
-    {
-      "name": "entitygen.naming.repository.suffix",
-      "type": "java.lang.String",
-      "description": "Suffix for repository interface names",
-      "defaultValue": "Repository"
-    },
-    {
-      "name": "entitygen.naming.service.suffix",
-      "type": "java.lang.String",
-      "description": "Suffix for service class names",
-      "defaultValue": "Service"
-    },
-    {
-      "name": "entitygen.naming.controller.suffix",
-      "type": "java.lang.String",
-      "description": "Suffix for controller class names",
-      "defaultValue": "Controller"
-    },
-    {
-      "name": "entitygen.generate.repositories",
-      "type": "java.lang.Boolean",
-      "description": "Generate JPA repository interfaces",
-      "defaultValue": true
-    },
-    {
-      "name": "entitygen.generate.services",
-      "type": "java.lang.Boolean",
-      "description": "Generate service layer classes",
-      "defaultValue": false
-    },
-    {
-      "name": "entitygen.generate.controllers",
-      "type": "java.lang.Boolean",
-      "description": "Generate REST controller classes",
-      "defaultValue": false
-    },
-    {
-      "name": "entitygen.generate.dtos",
-      "type": "java.lang.Boolean",
-      "description": "Generate Data Transfer Object classes",
-      "defaultValue": false
-    },
-    {
-      "name": "entitygen.generate.mapstruct-mappers",
-      "type": "java.lang.Boolean",
-      "description": "Generate MapStruct mapper interfaces",
-      "defaultValue": false
-    },
-    {
-      "name": "entitygen.schema.include",
-      "type": "java.lang.String",
-      "description": "Comma-separated list of schemas to include (e.g., public,app)",
-      "defaultValue": "public"
-    },
-    {
-      "name": "entitygen.schema.exclude",
-      "type": "java.lang.String",
-      "description": "Comma-separated list of schemas to exclude",
-      "defaultValue": "information_schema,pg_catalog"
-    },
-    {
-      "name": "entitygen.table.include",
-      "type": "java.lang.String",
-      "description": "Comma-separated list of table names to include",
-      "defaultValue": ""
-    },
-    {
-      "name": "entitygen.table.exclude",
-      "type": "java.lang.String",
-      "description": "Comma-separated list of table names/patterns to exclude (supports wildcards)",
-      "defaultValue": "flyway_schema_history,log_*,temp_*"
-    },
-    {
-      "name": "entitygen.field.default-values.enable",
-      "type": "java.lang.Boolean",
-      "description": "Generate @Builder.Default annotations with default values for fields",
-      "defaultValue": true
-    },
-    {
-      "name": "entitygen.field.comments.enable",
-      "type": "java.lang.Boolean",
-      "description": "Include database column comments as JavaDoc",
-      "defaultValue": true
-    },
-    {
-      "name": "entitygen.field.column-annotations.enable",
-      "type": "java.lang.Boolean",
-      "description": "Generate @Column annotations with length, precision, scale attributes",
-      "defaultValue": true
+      "description": "Package for generated controller classes"
     },
     {
       "name": "entitygen.output.directory",
@@ -157,60 +42,88 @@
       "defaultValue": "src/main/java"
     },
     {
-      "name": "entitygen.output.overwrite",
-      "type": "java.lang.Boolean",
-      "description": "Overwrite existing files during generation",
-      "defaultValue": false
-    },
-    {
-      "name": "entitygen.documentation.javadoc.enable",
-      "type": "java.lang.Boolean",
-      "description": "Generate comprehensive JavaDoc for entities and methods",
-      "defaultValue": true
-    },
-    {
-      "name": "entitygen.documentation.javadoc.author",
+      "name": "entitygen.naming.embeddable.suffix",
       "type": "java.lang.String",
-      "description": "Author name for JavaDoc @author tags",
-      "defaultValue": "EntityGen Maven Plugin"
+      "description": "Suffix for embeddable ID classes",
+      "defaultValue": "Id"
     },
-    {
-      "name": "entitygen.documentation.readme.enable",
-      "type": "java.lang.Boolean",
-      "description": "Generate README.md with entity documentation",
-      "defaultValue": false
-    },
-    {
-      "name": "entitygen.documentation.changelog.enable",
-      "type": "java.lang.Boolean",
-      "description": "Generate CHANGELOG.md with generation history",
-      "defaultValue": false
-    }
-  ],
-  "hints": [
     {
       "name": "entitygen.naming.entity.suffix",
-      "values": [
-        {"value": "", "description": "No suffix (e.g., User)"},
-        {"value": "Entity", "description": "Entity suffix (e.g., UserEntity)"},
-        {"value": "Model", "description": "Model suffix (e.g., UserModel)"}
-      ]
+      "type": "java.lang.String",
+      "description": "Suffix for entity class names",
+      "defaultValue": ""
     },
     {
       "name": "entitygen.naming.dto.suffix",
-      "values": [
-        {"value": "Dto", "description": "DTO suffix (e.g., UserDto)"},
-        {"value": "Response", "description": "Response suffix (e.g., UserResponse)"},
-        {"value": "Request", "description": "Request suffix (e.g., UserRequest)"}
-      ]
+      "type": "java.lang.String",
+      "description": "Suffix for DTO class names",
+      "defaultValue": "Dto"
     },
     {
-      "name": "entitygen.output.directory",
-      "values": [
-        {"value": "src/main/java", "description": "Standard Maven source directory"},
-        {"value": "src/generated/java", "description": "Generated sources directory"},
-        {"value": "target/generated-sources", "description": "Maven generated sources"}
-      ]
+      "name": "entitygen.naming.repository.suffix",
+      "type": "java.lang.String",
+      "description": "Suffix for repository interfaces",
+      "defaultValue": "Repository"
+    },
+    {
+      "name": "entitygen.naming.service.suffix",
+      "type": "java.lang.String",
+      "description": "Suffix for service interfaces",
+      "defaultValue": "Service"
+    },
+    {
+      "name": "entitygen.naming.service-impl.suffix",
+      "type": "java.lang.String",
+      "description": "Suffix for service implementation classes",
+      "defaultValue": "ServiceImpl"
+    },
+    {
+      "name": "entitygen.naming.controller.suffix",
+      "type": "java.lang.String",
+      "description": "Suffix for controller classes",
+      "defaultValue": "Controller"
+    },
+    {
+      "name": "entitygen.features.generate-all-components",
+      "type": "java.lang.Boolean",
+      "description": "Generate all application layers for each table",
+      "defaultValue": true
+    },
+    {
+      "name": "entitygen.features.generate-default-values",
+      "type": "java.lang.Boolean",
+      "description": "Generate default field values with Lombok @Builder.Default",
+      "defaultValue": false
+    },
+    {
+      "name": "entitygen.features.generate-comments",
+      "type": "java.lang.Boolean",
+      "description": "Include column comments as JavaDoc",
+      "defaultValue": true
+    },
+    {
+      "name": "entitygen.features.overwrite-existing",
+      "type": "java.lang.Boolean",
+      "description": "Overwrite existing files during code generation",
+      "defaultValue": true
+    },
+    {
+      "name": "entitygen.features.javadoc.author",
+      "type": "java.lang.String",
+      "description": "Author tag used in generated JavaDoc",
+      "defaultValue": "EntityGen Maven Plugin"
+    },
+    {
+      "name": "entitygen.schema.target",
+      "type": "java.lang.String",
+      "description": "Target schema to extract metadata from",
+      "defaultValue": ""
+    },
+    {
+      "name": "entitygen.table.include",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Comma-separated list of table names to include",
+      "defaultValue": []
     }
   ]
 }

@@ -9,6 +9,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+/**
+ * Helper class for configuring relation properties such as fetch type, cascade type,
+ * orphan removal, and collection type based on the relation type and foreign key constraints.
+ *
+ * @author leonknezevic
+ */
 @Slf4j
 public class RelationConfigHelper {
 
@@ -16,18 +22,27 @@ public class RelationConfigHelper {
         return FetchType.LAZY;
     }
 
-    public static CascadeType getCascadeType(RelationType relationType) {
+    public static CascadeType getCascadeType(RelationType relationType, ForeignKey foreignKey) {
+        if (foreignKey != null && (foreignKey.isOnDeleteCascade() || foreignKey.isOnUpdateCascade())) {
+            return switch (relationType) {
+                case ONE_TO_MANY, ONE_TO_ONE -> CascadeType.ALL;
+                case MANY_TO_ONE -> CascadeType.PERSIST;
+                case MANY_TO_MANY -> CascadeType.PERSIST_MERGE;
+            };
+        }
+
         return switch (relationType) {
+            case ONE_TO_MANY, MANY_TO_MANY, ONE_TO_ONE -> CascadeType.PERSIST_MERGE;
             case MANY_TO_ONE -> CascadeType.PERSIST;
-            case ONE_TO_MANY, ONE_TO_ONE -> CascadeType.ALL;
-            case MANY_TO_MANY -> CascadeType.PERSIST_MERGE;
         };
     }
 
-    public static boolean getOrphanRemoval(RelationType relationType) {
+    public static boolean getOrphanRemoval(RelationType relationType, ForeignKey foreignKey) {
+        boolean hasDeleteCascade = foreignKey != null && foreignKey.isOnDeleteCascade();
+
         return switch (relationType) {
-            case ONE_TO_MANY -> true;
-            case MANY_TO_ONE, MANY_TO_MANY, ONE_TO_ONE -> false;
+            case ONE_TO_MANY, ONE_TO_ONE -> hasDeleteCascade;
+            case MANY_TO_ONE, MANY_TO_MANY -> false;
         };
     }
 
@@ -39,12 +54,8 @@ public class RelationConfigHelper {
         return CollectionType.LIST;
     }
 
-    public static CascadeType getCascadeTypeFromConstraints(ForeignKey foreignKey, RelationType relationType) {
-        if (foreignKey.isOnDeleteCascade() || foreignKey.isOnUpdateCascade()) {
-            return CascadeType.ALL;
-        }
-
-        return getCascadeType(relationType);
+    public static boolean isOptional(ForeignKey foreignKey) {
+        return foreignKey == null || foreignKey.isNullable();
     }
     
 }

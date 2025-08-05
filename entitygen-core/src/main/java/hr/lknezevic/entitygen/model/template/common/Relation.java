@@ -12,6 +12,13 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a relation between entities in the context of a database.
+ * Contains metadata about the relation such as field name, target entity class,
+ * type of relation, cascade type, fetch type, and join columns.
+ *
+ * @author leonknezevic
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,26 +27,24 @@ public class Relation {
     private String fieldName;
     private String targetEntityClass;
 
-    private RelationType type;              // ONE_TO_ONE, MANY_TO_ONE, etc.
+    private RelationType type;
     private String mappedBy;
-    private boolean selfReferencing;         // true if this is a self-referencing relation
+    private boolean selfReferencing;
 
     @Builder.Default
     private Boolean orphanRemoval = false;
     private CascadeType cascadeType;
     private FetchType fetchType;
     @Builder.Default
-    private Boolean optional = true;               // za @ManyToOne, @OneToOne
+    private Boolean optional = true;
 
-    private CollectionType collectionType;  // za OneToMany / ManyToMany
+    private CollectionType collectionType;
 
-    // Za JOIN
     @Builder.Default
-    private List<String> joinColumns = new ArrayList<>(); // lokalne kolone
+    private List<String> joinColumns = new ArrayList<>();
     @Builder.Default
-    private List<String> referencedColumns = new ArrayList<>();        // strane kolone
+    private List<String> referencedColumns = new ArrayList<>();
 
-    // Za ManyToMany
     private String joinTableName;
 
     @Builder.Default
@@ -47,5 +52,5 @@ public class Relation {
     @Builder.Default
     private List<String> inverseReferencedColumns = new ArrayList<>();
 
-    private String mapsId; // null ako ne treba MapsId, inače ime polja u embedded id klasi
+    private String mapsId;
 }

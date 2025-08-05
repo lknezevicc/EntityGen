@@ -4,7 +4,7 @@ import hr.lknezevic.entitygen.builder.imports.*;
 import hr.lknezevic.entitygen.enums.ComponentType;
 import hr.lknezevic.entitygen.model.template.TemplateProviderObject;
 
-public class ImportBuilder {
+public class ImportFactory {
 
     public static ImportAnalyzer getAnalyzer(ComponentType componentType, TemplateProviderObject tpo) {
         return switch (componentType) {

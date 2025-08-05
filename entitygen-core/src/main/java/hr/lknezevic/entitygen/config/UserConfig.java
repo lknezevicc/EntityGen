@@ -5,18 +5,21 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Configuration class for EntityGen Maven Plugin
  * Maps all properties from application.properties to typed fields
  *
- * @author Leon Knežević
+ * @author leonknezevic
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserConfig {
-    // === Package Structure ===
+    // === Package Configuration ===
     private String embeddablePackage;
     private String entityPackage;
     private String dtoPackage;
@@ -25,17 +28,6 @@ public class UserConfig {
     private String serviceImplPackage;
     private String controllerPackage;
     private String outputDirectory;
-
-    // === Serialization Settings ===
-    @Builder.Default
-    private Boolean enableSerialization = true;
-
-    @Builder.Default
-    private Boolean generateSerialVersion = true;
-
-    // === Entity Generation Settings ===
-    @Builder.Default
-    private Boolean enableLombok = true;
 
     // === Naming Conventions ===
     @Builder.Default
@@ -61,57 +53,28 @@ public class UserConfig {
 
     // === Code Generation Features ===
     @Builder.Default
-    private Boolean generateRepositories = true;
+    private Boolean generateAllComponents = true;
 
     @Builder.Default
-    private Boolean generateServices = true;
-    
-    @Builder.Default
-    private Boolean generateControllers = true;
-    
-    @Builder.Default
-    private Boolean generateDtos = true;
+    private Boolean generateDefaultValues = false;
 
-    @Builder.Default
-    private Boolean preferLongIds = true;
-
-    // === Schema Filtering ===
-    @Builder.Default
-    private String includeSchemas = "public";
-    
-    @Builder.Default
-    private String excludeSchemas = "information_schema,pg_catalog";
-    
-    @Builder.Default
-    private String includeTables = "";
-    
-    @Builder.Default
-    private String excludeTables = "flyway_schema_history,log_*,temp_*";
-
-    // === Field Generation ===
-    @Builder.Default
-    private Boolean generateDefaultValues = true;
-    
     @Builder.Default
     private Boolean generateComments = true;
-    
-    @Builder.Default
-    private Boolean enableColumnAnnotations = true;
 
-    // === Output Settings ===
     @Builder.Default
-    private Boolean overwriteExisting = false;
+    private Boolean overwriteExisting = true;
 
-    // === Documentation ===
-    @Builder.Default
-    private Boolean generateJavadoc = true;
-    
     @Builder.Default
     private String javadocAuthor = "EntityGen Maven Plugin";
-    
+
+    // === Schema filtering ===
     @Builder.Default
-    private Boolean generateReadme = false;
-    
+    private String targetSchema = "";
+
     @Builder.Default
-    private Boolean generateChangelog = false;
+    private List<String> includeTables = new ArrayList<>();
+
+    public static UserConfig defaultConfig() {
+        return UserConfig.builder().build();
+    }
 }

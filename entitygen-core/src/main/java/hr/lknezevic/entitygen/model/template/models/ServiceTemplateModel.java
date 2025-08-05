@@ -7,6 +7,13 @@ import lombok.Getter;
 
 import java.util.List;
 
+/**
+ * Represents a template model for a service in the EntityGen framework.
+ * This class extends AbstractTemplateModel and provides the body of the service
+ * using a predefined template.
+ *
+ * @author leonknezevic
+ */
 @Getter
 public class ServiceTemplateModel extends AbstractTemplateModel {
 

@@ -4,6 +4,11 @@ import hr.lknezevic.entitygen.model.template.models.*;
 
 import java.util.List;
 
+/**
+ * Factory class for creating instances of template models based on the provided TemplateProviderObject.
+ *
+ * @author leonknezevic
+ */
 public class TemplateModelFactory {
 
     public static AbstractTemplateModel createModel(TemplateProviderObject tpo, List<String> imports) {

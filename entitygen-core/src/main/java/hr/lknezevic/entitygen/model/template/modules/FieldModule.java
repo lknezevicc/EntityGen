@@ -7,6 +7,12 @@ import hr.lknezevic.entitygen.model.template.modules.strategies.FieldRenderingFa
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Represents a module that constructs a field representation in an entity.
+ * It uses a rendering strategy based on the component type to generate the field representation.
+ *
+ * @author leonknezevic
+ */
 @Builder
 @RequiredArgsConstructor
 public class FieldModule implements ModuleBuilder {

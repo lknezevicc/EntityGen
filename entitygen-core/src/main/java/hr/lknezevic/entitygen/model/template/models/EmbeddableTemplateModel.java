@@ -1,6 +1,5 @@
 package hr.lknezevic.entitygen.model.template.models;
 
-import hr.lknezevic.entitygen.enums.ComponentType;
 import hr.lknezevic.entitygen.model.template.TemplateConst;
 import hr.lknezevic.entitygen.model.template.TemplateProviderObject;
 import hr.lknezevic.entitygen.model.template.modules.FieldModule;
@@ -8,7 +7,12 @@ import lombok.Getter;
 
 import java.util.List;
 
-
+/**
+ * Represents a template model for an embeddable entity.
+ * It constructs the model body by generating fields based on the embedded ID of the entity.
+ *
+ * @author leonknezevic
+ */
 @Getter
 public class EmbeddableTemplateModel extends AbstractTemplateModel {
 
@@ -18,12 +22,11 @@ public class EmbeddableTemplateModel extends AbstractTemplateModel {
 
     @Override
     public String getModelBody() {
-        List<String> fields = entity.getEmbeddedId()
-                .getFields()
+        List<String> fields = entity.getEmbeddedId().getFields()
                 .stream()
                 .map(field ->
                         FieldModule.builder()
-                                .componentType(ComponentType.EMBEDDABLE)
+                                .componentType(componentType)
                                 .field(field)
                                 .build()
                                 .construct()

@@ -12,6 +12,11 @@ import org.eclipse.text.edits.TextEdit;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class for formatting Java code using Eclipse's CodeFormatter.
+ *
+ * @author leonknezevic
+ */
 public class JavaCodeFormatter {
     private final CodeFormatter formatter;
 
@@ -28,7 +33,7 @@ public class JavaCodeFormatter {
         options.put(DefaultCodeFormatterConstants.FORMATTER_INDENTATION_SIZE, "4");
         options.put(DefaultCodeFormatterConstants.FORMATTER_LINE_SPLIT, "120");
 
-        // Inline braces - all set to END_OF_LINE for { on same line
+        // Inline braces - all set to END_OF_LINE for { on the same line
         options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_TYPE_DECLARATION, DefaultCodeFormatterConstants.END_OF_LINE);
         options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_METHOD_DECLARATION, DefaultCodeFormatterConstants.END_OF_LINE);
         options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_CONSTRUCTOR_DECLARATION, DefaultCodeFormatterConstants.END_OF_LINE);
@@ -44,7 +49,7 @@ public class JavaCodeFormatter {
                 String.valueOf(DefaultCodeFormatterConstants.WRAP_COMPACT));
 
         // Record component alignment (for newer Eclipse versions)
-        options.put("org.eclipse.jdt.core.formatter.alignment_for_record_components",
+        options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_RECORD_COMPONENTS,
                 String.valueOf(DefaultCodeFormatterConstants.WRAP_COMPACT));
 
         // Import organization
@@ -65,7 +70,6 @@ public class JavaCodeFormatter {
         }
 
         try {
-            // Format kao compilation unit (cijeli Java file)
             TextEdit edit = formatter.format(
                     CodeFormatter.K_COMPILATION_UNIT,
                     sourceCode,

@@ -4,6 +4,11 @@ import hr.lknezevic.entitygen.model.template.TemplateConst;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Represents a module that constructs an import statement for a given import name.
+ *
+ * @author leonknezevic
+ */
 @Builder
 @RequiredArgsConstructor
 public class ImportModule implements ModuleBuilder {
@@ -11,8 +16,7 @@ public class ImportModule implements ModuleBuilder {
 
     @Override
     public String construct() {
-        if (importName.isEmpty())
-            return "";
+        if (importName.isEmpty()) return "";
         return String.format(TemplateConst.IMPORT_STATEMENT, importName);
     }
 }

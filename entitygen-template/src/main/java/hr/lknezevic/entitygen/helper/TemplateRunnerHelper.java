@@ -4,13 +4,14 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
-import hr.lknezevic.entitygen.builder.ImportBuilder;
+import hr.lknezevic.entitygen.builder.ImportFactory;
 import hr.lknezevic.entitygen.config.UserConfig;
 import hr.lknezevic.entitygen.enums.ComponentType;
 import hr.lknezevic.entitygen.model.template.TemplateModelFactory;
 import hr.lknezevic.entitygen.model.template.TemplateProviderObject;
 import hr.lknezevic.entitygen.model.template.common.Entity;
 import hr.lknezevic.entitygen.model.template.models.TemplateModel;
+import hr.lknezevic.entitygen.utils.TemplateUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -27,7 +28,7 @@ import java.util.Map;
  * Handles template configuration, file path resolution, and component generation logic
  * based on {@link UserConfig} settings.
  *
- * @author Leon Knežević
+ * @author leonknezevic
  */
 @Slf4j
 public class TemplateRunnerHelper {
@@ -49,9 +50,7 @@ public class TemplateRunnerHelper {
     }
 
     /**
-     * Generates a specific component type for the given entity.
-     * <p>
-     * Skips generation if component is disabled in configuration or not applicable
+     * Generates component types for the given entity.
      *
      * @param entity the entity to generate component for
      * @param entityByClassName map of table name to entity for relation lookups
@@ -66,43 +65,43 @@ public class TemplateRunnerHelper {
                 continue;
             }
 
-            if (!shouldGenerate(componentType)) {
+            if (!TemplateUtil.shouldGenerate(componentType, userConfig)) {
                 log.info("Skipping {} generation for {}", componentType, entity.getClassName());
                 continue;
             }
 
-            List<String> imports = ImportBuilder.getAnalyzer(componentType, tpo).getImports();
+            List<String> imports = ImportFactory.getAnalyzer(componentType, tpo).getImports();
             TemplateModel template = TemplateModelFactory.createModel(tpo, imports);
 
-            String fileName= template.getComponentPackagePath() + File.separator +
+            String filePath = template.getComponentPackagePath() + File.separator +
                     template.getComponentName() + JAVA_EXTENSION;
 
-            File file = new File(fileName);
-            if (file.getParentFile().mkdirs()) log.debug("Created {} parent directory", file.getParentFile().getAbsolutePath());
+            File file = new File(filePath);
+
+            if (!TemplateUtil.overwriteComponent(componentType, file, userConfig)) {
+                log.info("Skipping {} generation for {} - file already exists", componentType, entity.getClassName());
+                continue;
+            }
+
+            if (file.getParentFile().mkdirs())
+                log.debug("Created {} parent directory", file.getParentFile().getAbsolutePath());
 
             Map<String, Object> data = new HashMap<>();
-//            data.put("cfg", userConfig);
-//            data.put("entity", entity);
-//            data.put("entityByClassName", entityByClassName);
             data.put("template", template);
 
             try (StringWriter stringWriter = new StringWriter()) {
                 getTemplate(componentType).process(data, stringWriter);
 
-                // Dobij generirani kod
                 String generatedCode = stringWriter.toString();
-
-                // Formatiraj kod
                 String formattedCode = formatter.formatJavaCode(generatedCode);
 
                 if (componentType == ComponentType.ENTITY || componentType == ComponentType.EMBEDDABLE) {
                     formattedCode = formatter.formatComponent(formattedCode);
                 }
 
-                // Zapiši formatiran kod u file
                 try (FileWriter fileWriter = new FileWriter(file)) {
                     fileWriter.write(formattedCode);
-                };
+                }
 
                 log.info("Generated {} for {}", componentType, entity.getClassName());
             } catch (TemplateException | IOException e) {
@@ -121,16 +120,6 @@ public class TemplateRunnerHelper {
             case SERVICE_IMPL -> cfg.getTemplate("service-impl.ftl");
             case CONTROLLER -> cfg.getTemplate("controller.ftl");
             case REPOSITORY -> cfg.getTemplate("repository.ftl");
-        };
-    }
-
-    private Boolean shouldGenerate(ComponentType componentType) {
-        return switch (componentType) {
-            case ENTITY, EMBEDDABLE -> true;
-            case DTO -> userConfig.getGenerateDtos();
-            case SERVICE, SERVICE_IMPL -> userConfig.getGenerateServices();
-            case CONTROLLER -> userConfig.getGenerateControllers();
-            case REPOSITORY -> userConfig.getGenerateRepositories();
         };
     }
 }

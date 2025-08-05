@@ -7,6 +7,13 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents an entity in the context of a database.
+ * Contains metadata about the entity such as its class name, table name,
+ * schema, catalog, fields, relations, unique constraints, and whether it has a composite key or embedded ID.
+ *
+ * @author leonknezevic
+ */
 @Data
 @Builder
 public class Entity {

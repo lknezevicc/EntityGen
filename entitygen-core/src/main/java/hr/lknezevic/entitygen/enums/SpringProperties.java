@@ -2,6 +2,11 @@ package hr.lknezevic.entitygen.enums;
 
 import lombok.Getter;
 
+/**
+ * Enum representing various Spring properties used in the application.
+ *
+ * @author leonknezevic
+ */
 @Getter
 public enum SpringProperties {
     // === Database Connection ===
@@ -11,53 +16,32 @@ public enum SpringProperties {
     DRIVER("spring.datasource.driver-class-name"),
     
     // === Package Structure ===
+    EMBEDDABLE_PACKAGE("entitygen.package.embeddable"),
     ENTITY_PACKAGE("entitygen.package.entity"),
     DTO_PACKAGE("entitygen.package.dto"),
     REPOSITORY_PACKAGE("entitygen.package.repository"),
     SERVICE_PACKAGE("entitygen.package.service"),
     CONTROLLER_PACKAGE("entitygen.package.controller"),
-    
-    // === Serialization Settings ===
-    ENABLE_SERIALIZATION("entitygen.serialization.enable"),
-    GENERATE_SERIAL_VERSION("entitygen.serialization.generate-version"),
-    
-    // === Entity Generation Settings ===
-    ENABLE_LOMBOK("entitygen.entity.lombok.enable"),
+    OUTPUT_DIRECTORY("entitygen.output.directory"),
     
     // === Naming Conventions ===
-    ENTITY_SUFFIX("entitygen.naming.entity.suffix"), // Entity, Model, ""
-    DTO_SUFFIX("entitygen.naming.dto.suffix"), // Dto, Response, Request
-    REPOSITORY_SUFFIX("entitygen.naming.repository.suffix"), // Repository, Dao
-    SERVICE_SUFFIX("entitygen.naming.service.suffix"), // Service, Manager
-    CONTROLLER_SUFFIX("entitygen.naming.controller.suffix"), // Controller, Resource
+    ENTITY_SUFFIX("entitygen.naming.entity.suffix"),
+    EMBEDDABLE_SUFFIX("entitygen.naming.embeddable.suffix"),
+    DTO_SUFFIX("entitygen.naming.dto.suffix"),
+    REPOSITORY_SUFFIX("entitygen.naming.repository.suffix"),
+    SERVICE_SUFFIX("entitygen.naming.service.suffix"),
+    CONTROLLER_SUFFIX("entitygen.naming.controller.suffix"),
     
     // === Code Generation Features ===
-    GENERATE_REPOSITORIES("entitygen.generate.repositories"),
-    GENERATE_SERVICES("entitygen.generate.services"),
-    GENERATE_CONTROLLERS("entitygen.generate.controllers"),
-    GENERATE_DTOS("entitygen.generate.dtos"),
-    GENERATE_MAPPERS("entitygen.generate.mapstruct-mappers"),
+    GENERATE_ALL_COMPONENTS("entitygen.features.generate-all-components"),
+    GENERATE_DEFAULT_VALUES("entitygen.features.generate-default-values"),
+    GENERATE_COMMENTS("entitygen.features.generate-comments"),
+    OVERWRITE_EXISTING("entitygen.features.overwrite-existing"),
+    JAVADOC_AUTHOR("entitygen.features.javadoc.author"),
     
     // === Schema Filtering ===
-    INCLUDE_SCHEMAS("entitygen.schema.include"), // schema1,schema2
-    EXCLUDE_SCHEMAS("entitygen.schema.exclude"),
-    INCLUDE_TABLES("entitygen.table.include"), // users,orders,products
-    EXCLUDE_TABLES("entitygen.table.exclude"), // logs,temp_*
-    
-    // === Field Generation ===
-    GENERATE_DEFAULT_VALUES("entitygen.field.default-values.enable"),
-    GENERATE_COMMENTS("entitygen.field.comments.enable"),
-    ENABLE_COLUMN_ANNOTATIONS("entitygen.field.column-annotations.enable"),
-    
-    // === Output Settings ===
-    OUTPUT_DIRECTORY("entitygen.output.directory"),
-    OVERWRITE_EXISTING("entitygen.output.overwrite"),
-    
-    // === Documentation ===
-    GENERATE_JAVADOC("entitygen.documentation.javadoc.enable"),
-    JAVADOC_AUTHOR("entitygen.documentation.javadoc.author"),
-    GENERATE_README("entitygen.documentation.readme.enable"),
-    GENERATE_CHANGELOG("entitygen.documentation.changelog.enable");
+    TARGET_SCHEMA("entitygen.schema.target"),
+    INCLUDE_TABLES("entitygen.table.include");
 
     private final String value;
 

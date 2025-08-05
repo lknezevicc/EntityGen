@@ -5,6 +5,12 @@ import hr.lknezevic.entitygen.model.template.modules.strategies.relation.DtoRela
 import hr.lknezevic.entitygen.model.template.modules.strategies.relation.EntityRelationRendering;
 import hr.lknezevic.entitygen.model.template.modules.strategies.relation.ServiceImplRelationRendering;
 
+/**
+ * Factory class for creating relation rendering strategies based on the component type.
+ * It encapsulates the logic of selecting the appropriate rendering strategy.
+ *
+ * @author leonknezevic
+ */
 public class RelationRenderingFactory {
 
     public static RelationRenderingStrategy createStrategy(ComponentType componentType) {

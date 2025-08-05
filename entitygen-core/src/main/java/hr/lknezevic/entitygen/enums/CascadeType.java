@@ -2,6 +2,11 @@ package hr.lknezevic.entitygen.enums;
 
 import lombok.Getter;
 
+/**
+ * Enum representing different types of cascade operations in JPA.
+ *
+ * @author leonknezevic
+ */
 @Getter
 public enum CascadeType {
     ALL("CascadeType.ALL"),

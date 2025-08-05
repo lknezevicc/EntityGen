@@ -3,7 +3,9 @@ package hr.lknezevic.entitygen.utils;
 import hr.lknezevic.entitygen.config.UserConfig;
 import hr.lknezevic.entitygen.enums.ComponentType;
 import hr.lknezevic.entitygen.model.template.TemplateConst;
+import hr.lknezevic.entitygen.model.template.TemplateFactory;
 import hr.lknezevic.entitygen.model.template.common.Entity;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -12,20 +14,37 @@ import java.util.stream.Collectors;
 
 public class TemplateUtil {
 
+    public static Boolean shouldGenerate(ComponentType componentType, UserConfig userConfig) {
+        if (userConfig.getGenerateAllComponents()) return  true;
+
+        return componentType == ComponentType.ENTITY || componentType == ComponentType.EMBEDDABLE;
+    }
+
+    public static boolean overwriteComponent(ComponentType componentType, File file, UserConfig userConfig) {
+        return !userConfig.getOverwriteExisting() && file.exists();
+    }
+
     public static String getComponentName(String entityName, ComponentType componentType, UserConfig userConfig) {
-        return String.format(TemplateConst.COMPONENT_NAME, entityName, getComponentSuffix(componentType, userConfig));
+        return TemplateFactory.builder()
+                .template(TemplateConst.COMPONENT_NAME)
+                .build()
+                .addParams(entityName, getComponentSuffix(componentType, userConfig))
+                .format();
     }
 
     public static String getComponentImport(ComponentType componentType, UserConfig userConfig, String entityName) {
-        String template = TemplateConst.SIMPLE_IMPORT;
+        TemplateFactory factory = TemplateFactory.builder()
+                .template(TemplateConst.SIMPLE_IMPORT)
+                .build();
+
         return switch (componentType) {
-            case EMBEDDABLE -> String.format(template, userConfig.getEmbeddablePackage(), entityName);
-            case ENTITY -> String.format(template, userConfig.getEntityPackage(), entityName + userConfig.getEntitySuffix());
-            case DTO -> String.format(template, userConfig.getDtoPackage(), entityName + userConfig.getDtoSuffix());
-            case REPOSITORY -> String.format(template, userConfig.getRepositoryPackage(), entityName + userConfig.getRepositorySuffix());
-            case SERVICE -> String.format(template, userConfig.getServicePackage(), entityName + userConfig.getServiceSuffix());
-            case SERVICE_IMPL -> String.format(template, userConfig.getServiceImplPackage(), entityName + userConfig.getServiceImplSuffix());
-            case CONTROLLER ->  String.format(template, userConfig.getControllerPackage(), entityName + userConfig.getControllerSuffix());
+            case EMBEDDABLE -> factory.addParams(userConfig.getEmbeddablePackage(), entityName).format();
+            case ENTITY -> factory.addParams(userConfig.getEntityPackage(), entityName + userConfig.getEntitySuffix()).format();
+            case DTO -> factory.addParams(userConfig.getDtoPackage(), entityName + userConfig.getDtoSuffix()).format();
+            case REPOSITORY -> factory.addParams(userConfig.getRepositoryPackage(), entityName + userConfig.getRepositorySuffix()).format();
+            case SERVICE -> factory.addParams(userConfig.getServicePackage(), entityName + userConfig.getServiceSuffix()).format();
+            case SERVICE_IMPL -> factory.addParams(userConfig.getServiceImplPackage(), entityName + userConfig.getServiceImplSuffix()).format();
+            case CONTROLLER -> factory.addParams(userConfig.getControllerPackage(), entityName + userConfig.getControllerSuffix()).format();
         };
     }
 
@@ -83,7 +102,7 @@ public class TemplateUtil {
 
     public static String joinParams(String delimiter, String ...params) {
         return Arrays.stream(params)
-                .filter(param -> param != null && !param.isEmpty())
+                .filter(param -> !StringUtils.isBlank(param))
                 .collect(Collectors.joining(delimiter));
     }
 
@@ -95,6 +114,5 @@ public class TemplateUtil {
         String formatted = String.join(", ", params);
         return formatted.isEmpty() ? "" : "(" + formatted + ")";
     }
-
 
 }

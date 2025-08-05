@@ -15,6 +15,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Default implementation of the EntityModelMapper interface.
+ * This class maps database tables to entity models.
+ *
+ * @author leonknezevic
+ */
 @RequiredArgsConstructor
 public class DefaultEntityModelMapper implements EntityModelMapper {
     private final UserConfig userConfig;
@@ -89,6 +95,10 @@ public class DefaultEntityModelMapper implements EntityModelMapper {
                 .className(NamingUtil.generateEmbeddableClassName(tableName, userConfig))
                 .fields(pkFields)
                 .build();
+    }
+
+    private boolean checkCompositeKey(List<Field> fields) {
+        return fields.stream().filter(Field::isPrimaryKey).count() > 1;
     }
 
 }

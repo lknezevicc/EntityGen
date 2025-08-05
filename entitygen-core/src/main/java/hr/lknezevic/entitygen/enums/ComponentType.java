@@ -1,8 +1,13 @@
 package hr.lknezevic.entitygen.enums;
 
+/**
+ * Enum representing different component types in the application.
+ *
+ * @author leonknezevic
+ */
 public enum ComponentType {
-    EMBEDDABLE,
     ENTITY,
+    EMBEDDABLE,
     DTO,
     REPOSITORY,
     SERVICE,

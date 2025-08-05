@@ -8,11 +8,8 @@ import java.util.stream.Collectors;
 
 /**
  * Utility class for detecting and analyzing relationships between database entities.
- * <p>
- * Provides static methods for identifying relationship types (ONE_TO_ONE, MANY_TO_ONE, MANY_TO_MANY)
- * based on foreign key constraints, unique constraints, and table structure analysis.
  *
- * @author Leon Knežević
+ * @author leonknezevic
  */
 public class RelationDetector {
     
@@ -28,8 +25,7 @@ public class RelationDetector {
             return true;
         }
 
-        boolean allUnique = fkGroup.stream().allMatch(ForeignKey::isUnique);
-        if (allUnique) {
+        if (fkGroup.stream().allMatch(ForeignKey::isUnique)) {
             return true;
         }
 
@@ -45,7 +41,7 @@ public class RelationDetector {
      * Checks if foreign key columns are also primary key columns (shared primary key pattern).
      *
      * @param table the table to check
-     * @param fkGroup foreign key columns to compare with primary key
+     * @param fkGroup foreign key columns to compare with a primary key
      * @return true if foreign key equals primary key
      */
     public static boolean isForeignKeyEqualsPrimaryKey(Table table, List<ForeignKey> fkGroup) {
@@ -61,9 +57,6 @@ public class RelationDetector {
     
     /**
      * Determines if a table serves as a junction table for MANY_TO_MANY relationships.
-     * <p>
-     * Junction tables typically have exactly two foreign keys referencing different tables,
-     * with those foreign key columns forming part of the primary key.
      *
      * @param table the table to analyze
      * @return true if this is a junction table
@@ -112,12 +105,6 @@ public class RelationDetector {
      */
     public static String generateRelationKey(String sourceTable, String targetTable, String type) {
         return String.format("%s-%s-%s", sourceTable, targetTable, type);
-    }
-
-    public static boolean isColumnPartOfPrimaryKey(Table sourceTable, String columnName) {
-        if (columnName == null) return false;
-        return sourceTable.getPrimaryKeys().stream()
-                .anyMatch(pk -> pk.equalsIgnoreCase(columnName));
     }
 
 }

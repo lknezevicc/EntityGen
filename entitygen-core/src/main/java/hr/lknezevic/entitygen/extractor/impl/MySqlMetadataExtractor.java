@@ -3,6 +3,7 @@ package hr.lknezevic.entitygen.extractor.impl;
 import hr.lknezevic.entitygen.extractor.MetadataExtractor;
 import hr.lknezevic.entitygen.filter.SchemaFilter;
 import hr.lknezevic.entitygen.model.*;
+import hr.lknezevic.entitygen.utils.MetadataExtractorUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,12 +11,22 @@ import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
+/**
+ * MySQL Metadata Extractor implementation for extracting database schema, tables, columns, foreign keys, and unique constraints.
+ *
+ * @author leonknezevic
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class MySqlMetadataExtractor implements MetadataExtractor {
     private final SchemaFilter schemaFilter;
 
+    /**
+     * Extracts schemas (databases) from the given connection.ž
+     *
+     * @param connection the database connection
+     * @return a list of schemas
+     */
     @Override
     public List<Schema> extractSchemas(Connection connection) {
         List<Schema> schemas = new ArrayList<>();
@@ -30,8 +41,8 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
                 String catalogName = rsCatalogs.getString("TABLE_CAT");
                 log.debug("Found catalog: {}", catalogName);
 
-                if (schemaFilter.isSystemSchema(catalogName)) {
-                    log.debug("Skipping system schema: {}", catalogName);
+                if (schemaFilter.isSystemSchema(catalogName) || !schemaFilter.isTargetSchema(catalogName)) {
+                    log.debug("Skipping schema: {}", catalogName);
                     continue;
                 }
 
@@ -63,6 +74,13 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
         return schemas;
     }
 
+    /**
+     * Extracts tables from the given schema name.
+     *
+     * @param metaData the DatabaseMetaData object
+     * @param schemaName the name of the schema to extract tables from
+     * @return a list of tables in the specified schema
+     */
     @Override
     public List<Table> extractTables(DatabaseMetaData metaData, String schemaName) {
         List<Table> tables = new ArrayList<>();
@@ -72,6 +90,12 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
 
             while (rsTables.next()) {
                 String tableName = rsTables.getString("TABLE_NAME");
+
+                if (!schemaFilter.isTableIncluded(tableName)) {
+                    log.debug("Skipping table: {}", tableName);
+                    continue;
+                }
+
                 String tableType = rsTables.getString("TABLE_TYPE");
 
                 if (!"TABLE".equalsIgnoreCase(tableType)) continue;
@@ -104,6 +128,14 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
         return tables;
     }
 
+    /**
+     * Extracts columns for a specific table in the given schema.
+     *
+     * @param metaData the DatabaseMetaData object
+     * @param schemaName the name of the schema
+     * @param tableName the name of the table
+     * @return a list of columns in the specified table
+     */
     @Override
     public List<Column> extractColumns(DatabaseMetaData metaData, String schemaName, String tableName) {
         List<Column> columns = new ArrayList<>();
@@ -159,13 +191,10 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
                     precision = columnSize > 0 ? columnSize : null;
                 }
 
-                log.debug("Column {}: dataType={}, length={}, precision={}, scale={}, resolved JavaType {}",
-                        columnName, dataType, length, precision, scale, resolveJavaType(dataType, precision, scale));
-
                 Column column = Column.builder()
                         .name(columnName)
                         .dataType(dataType)
-                        .javaType(resolveJavaType(dataType, precision, scale))
+                        .javaType(MetadataExtractorUtil.resolveJavaType(dataType, precision, scale))
                         .nullable("YES".equalsIgnoreCase(rs.getString("IS_NULLABLE")))
                         .primaryKey(primaryKeys.contains(columnName))
                         .autoIncrement(isAutoIncrement)
@@ -175,7 +204,7 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
                         .length(length)
                         .precision(precision)
                         .scale(scale >= 0 ? scale : null)
-                        .isLob(isLobType(rs, dataType))
+                        .isLob(MetadataExtractorUtil.isLobType(rs, dataType))
                         .build();
 
                 columns.add(column);
@@ -188,6 +217,14 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
         return columns;
     }
 
+    /**
+     * Extracts foreign keys for a specific table in the given schema.
+     *
+     * @param metaData the DatabaseMetaData object
+     * @param schemaName the name of the schema
+     * @param tableName the name of the table
+     * @return a list of foreign keys in the specified table
+     */
     @Override
     public List<ForeignKey> extractForeignKeys(DatabaseMetaData metaData, String schemaName, String tableName) {
         List<ForeignKey> foreignKeys = new ArrayList<>();
@@ -214,6 +251,14 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
         return foreignKeys;
     }
 
+    /**
+     * Extracts unique constraints for a specific table in the given schema.
+     *
+     * @param metaData the DatabaseMetaData object
+     * @param schemaName the name of the schema
+     * @param tableName the name of the table
+     * @return a list of unique constraints in the specified table
+     */
     @Override
     public List<UniqueConstraint> extractUniqueConstraints(DatabaseMetaData metaData, String schemaName, String tableName) {
         Map<String, List<String>> constraintMap = new HashMap<>();

@@ -1,5 +1,6 @@
 package hr.lknezevic.entitygen;
 
+import hr.lknezevic.entitygen.config.UserConfig;
 import hr.lknezevic.entitygen.extractor.MetadataExtractor;
 import hr.lknezevic.entitygen.extractor.MetadataExtractorFactory;
 import hr.lknezevic.entitygen.model.Schema;
@@ -13,12 +14,14 @@ import java.util.List;
 
 @Slf4j
 public class EntityGenRunner {
+    private final UserConfig userConfig;
     private final ConnectionProvider connectionProvider;
 
-    public EntityGenRunner(String springConfigPath, String activeProfile) {
+    public EntityGenRunner(UserConfig userConfig, String springConfigPath, String activeProfile) {
+        this.userConfig = userConfig;
         String resolvedConfigPath = resolveConfigPath(springConfigPath, activeProfile);
         log.info("Using config path: {}", resolvedConfigPath);
-        this.connectionProvider = createConnectionProvider(resolvedConfigPath);
+        connectionProvider = createConnectionProvider(resolvedConfigPath);
     }
 
     public List<Schema> generate() {
@@ -28,7 +31,7 @@ public class EntityGenRunner {
             String databaseProductName = connection.getMetaData().getDatabaseProductName().toLowerCase();
             log.info("Connected to database: {}", databaseProductName);
 
-            MetadataExtractor metadataExtractor = new MetadataExtractorFactory().getMetadataExtractor(databaseProductName);
+            MetadataExtractor metadataExtractor = MetadataExtractorFactory.getMetadataExtractor(userConfig, databaseProductName);
 
             List<Schema> schemas = metadataExtractor.extractSchemas(connection);
             log.info("Extraction completed. Found {} schemas.", schemas.size());
@@ -43,6 +46,7 @@ public class EntityGenRunner {
         if (!profile.equalsIgnoreCase("default")) {
             return path.replace("application.", "application-" + profile + ".");
         }
+
         return path;
     }
 
