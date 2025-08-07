@@ -31,7 +31,7 @@ public class TemplateUtil {
      * @return true if the component should be generated, false otherwise
      */
     public static Boolean shouldGenerate(ComponentType componentType, UserConfig userConfig) {
-        if (userConfig.getGenerateAllComponents()) return  true;
+        if (userConfig.getGenerateAllComponents()) return true;
 
         return componentType == ComponentType.ENTITY || componentType == ComponentType.EMBEDDABLE;
     }
