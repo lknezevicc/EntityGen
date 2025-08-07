@@ -1,13 +1,21 @@
-package hr.lknezevic.entitygen.builder;
+package hr.lknezevic.entitygen.analyzer;
 
-import hr.lknezevic.entitygen.builder.imports.*;
-import hr.lknezevic.entitygen.enums.ComponentType;
+import hr.lknezevic.entitygen.analyzer.imports.*;
 import hr.lknezevic.entitygen.model.template.TemplateProviderObject;
 
+/**
+ * Factory class for creating instances of ImportAnalyzer based on the component type.
+ */
 public class ImportFactory {
 
-    public static ImportAnalyzer getAnalyzer(ComponentType componentType, TemplateProviderObject tpo) {
-        return switch (componentType) {
+    /**
+     * Returns an ImportAnalyzer instance based on the provided component type
+     *
+     * @param tpo the TemplateProviderObject containing necessary information
+     * @return an instance of ImportAnalyzer
+     */
+    public static ImportAnalyzer getAnalyzer(TemplateProviderObject tpo) {
+        return switch (tpo.componentType()) {
             case EMBEDDABLE -> new EmbeddableImportAnalyzer(tpo);
             case ENTITY ->  new EntityImportAnalyzer(tpo);
             case DTO -> new DtoImportAnalyzer(tpo);

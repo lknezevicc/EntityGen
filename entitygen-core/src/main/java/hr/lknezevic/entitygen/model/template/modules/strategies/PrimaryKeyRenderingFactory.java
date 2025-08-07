@@ -5,8 +5,18 @@ import hr.lknezevic.entitygen.model.template.modules.strategies.pk.DtoPrimaryKey
 import hr.lknezevic.entitygen.model.template.modules.strategies.pk.EntityPrimaryKeyStrategy;
 import hr.lknezevic.entitygen.model.template.modules.strategies.pk.ServiceImplPrimaryKeyStrategy;
 
+/**
+ * Factory class for creating primary key rendering strategies based on the component type.
+ */
 public class PrimaryKeyRenderingFactory {
 
+    /**
+     * Creates a primary key rendering strategy based on the provided component type.
+     *
+     * @param componentType the type of component
+     * @return an instance of PrimaryKeyRenderingStrategy
+     * @throws IllegalArgumentException if the component type is not supported
+     */
     public static PrimaryKeyRenderingStrategy createStrategy(ComponentType componentType) {
         return switch (componentType) {
             case ENTITY -> new EntityPrimaryKeyStrategy();

@@ -1,4 +1,4 @@
-package hr.lknezevic.entitygen.builder.imports;
+package hr.lknezevic.entitygen.analyzer.imports;
 
 import hr.lknezevic.entitygen.enums.TemplateImport;
 import hr.lknezevic.entitygen.model.template.TemplateProviderObject;
@@ -6,12 +6,20 @@ import hr.lknezevic.entitygen.model.template.TemplateProviderObject;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Analyzes and provides the necessary imports for an embeddable class in JPA.
+ */
 public class EmbeddableImportAnalyzer extends AbstractImportAnalyzer {
 
     public EmbeddableImportAnalyzer(TemplateProviderObject tpo) {
         super(tpo.entity(), tpo.userConfig(), tpo.entityByClassName());
     }
 
+    /**
+     * Returns a list of imports required for the Embeddable class.
+     *
+     * @return List of import strings
+     */
     @Override
     public List<String> getImports() {
         imports.addAll(Set.of(
@@ -25,8 +33,7 @@ public class EmbeddableImportAnalyzer extends AbstractImportAnalyzer {
                 TemplateImport.JAVA_SERIAL
         ));
 
-        if (hasAdditionalImports())
-            analyzeAdditionalImports();
+        analyzeAdditionalImports();
 
         return getCombinedImports();
     }
@@ -48,11 +55,6 @@ public class EmbeddableImportAnalyzer extends AbstractImportAnalyzer {
                 imports.add(typeImport);
             }
         });
-    }
-
-    @Override
-    protected boolean hasAdditionalImports() {
-        return true;
     }
 
 }

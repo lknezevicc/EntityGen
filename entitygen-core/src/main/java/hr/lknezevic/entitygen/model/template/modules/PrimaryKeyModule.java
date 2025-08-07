@@ -10,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 /**
  * Represents a module that constructs the primary key representation for an entity.
  * It uses a rendering strategy based on the component type to generate the primary key representation.
- *
- * @author leonknezevic
  */
 @Builder
 @RequiredArgsConstructor
@@ -19,6 +17,11 @@ public class PrimaryKeyModule implements ModuleBuilder {
     private final ComponentType componentType;
     private final Entity entity;
 
+    /**
+     * Constructs the primary key representation for the entity based on the component type.
+     *
+     * @return a string representation of the primary key
+     */
     @Override
     public String construct() {
         PrimaryKeyRenderingStrategy strategy = PrimaryKeyRenderingFactory.createStrategy(componentType);

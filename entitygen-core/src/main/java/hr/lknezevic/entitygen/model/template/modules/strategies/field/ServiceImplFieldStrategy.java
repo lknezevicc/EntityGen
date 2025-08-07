@@ -7,10 +7,16 @@ import hr.lknezevic.entitygen.model.template.modules.strategies.FieldRenderingSt
 import hr.lknezevic.entitygen.utils.NamingUtil;
 
 /**
- * Strategy for ServiceImpl field rendering - generates entity.getFieldName() calls.
+ * Strategy for rendering service implementation fields.
  */
 public class ServiceImplFieldStrategy implements FieldRenderingStrategy {
-    
+
+    /**
+     * Renders a field for a service implementation using a predefined template.
+     *
+     * @param field the field to be rendered
+     * @return a formatted string representing the field in the service implementation
+     */
     @Override
     public String render(Field field) {
         return TemplateFactory.builder()

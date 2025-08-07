@@ -8,10 +8,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Helper class for building relation parameters
+ * Utility class for rendering parameters for different types of relations in entity templates.
  */
 public class RelationRenderingUtil {
 
+    /**
+     * Builds a string of parameters for a many-to-one relationship.
+     *
+     * @param relation the relation object containing details about the relationship
+     * @return a formatted string of parameters for the many-to-one relationship
+     */
     public static String buildManyToOneParams(Relation relation) {
         List<String> params = new ArrayList<>();
         
@@ -22,6 +28,12 @@ public class RelationRenderingUtil {
         return TemplateUtil.formatOptionalParameters(params.toArray(new String[0]));
     }
 
+    /**
+     * Builds a string of parameters for a one-to-one relationship.
+     *
+     * @param relation the relation object containing details about the relationship
+     * @return a formatted string of parameters for the one-to-one relationship
+     */
     public static String buildOneToOneParams(Relation relation) {
         List<String> params = new ArrayList<>();
         
@@ -39,6 +51,12 @@ public class RelationRenderingUtil {
         return TemplateUtil.formatOptionalParameters(params.toArray(new String[0]));
     }
 
+    /**
+     * Builds a string of parameters for a one-to-many relationship.
+     *
+     * @param relation the relation object containing details about the relationship
+     * @return a formatted string of parameters for the one-to-many relationship
+     */
     public static String buildOneToManyParams(Relation relation) {
         List<String> params = new ArrayList<>();
         
@@ -50,6 +68,12 @@ public class RelationRenderingUtil {
         return TemplateUtil.formatOptionalParameters(params.toArray(new String[0]));
     }
 
+    /**
+     * Builds a string of parameters for a many-to-many relationship.
+     *
+     * @param relation the relation object containing details about the relationship
+     * @return a formatted string of parameters for the many-to-many relationship
+     */
     public static String buildManyToManyParams(Relation relation) {
         List<String> params = new ArrayList<>();
         

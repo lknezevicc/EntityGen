@@ -8,17 +8,19 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Represents a module that constructs a field representation in an entity.
- * It uses a rendering strategy based on the component type to generate the field representation.
- *
- * @author leonknezevic
+ * Represents a module that constructs a field representation for a given field.
  */
 @Builder
 @RequiredArgsConstructor
 public class FieldModule implements ModuleBuilder {
     private final ComponentType componentType;
     private final Field field;
-    
+
+    /**
+     * Constructs a field representation based on the component type and field details.
+     *
+     * @return a string representation of the field
+     */
     @Override
     public String construct() {
         FieldRenderingStrategy strategy = FieldRenderingFactory.createStrategy(componentType);

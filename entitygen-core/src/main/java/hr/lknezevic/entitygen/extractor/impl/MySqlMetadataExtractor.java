@@ -1,11 +1,12 @@
 package hr.lknezevic.entitygen.extractor.impl;
 
+import hr.lknezevic.entitygen.exceptions.unchecked.MetadataExtractionException;
 import hr.lknezevic.entitygen.extractor.MetadataExtractor;
 import hr.lknezevic.entitygen.filter.SchemaFilter;
 import hr.lknezevic.entitygen.model.*;
+import hr.lknezevic.entitygen.utils.LoggingUtility;
 import hr.lknezevic.entitygen.utils.MetadataExtractorUtil;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.sql.*;
 import java.util.*;
@@ -13,10 +14,7 @@ import java.util.stream.Collectors;
 
 /**
  * MySQL Metadata Extractor implementation for extracting database schema, tables, columns, foreign keys, and unique constraints.
- *
- * @author leonknezevic
  */
-@Slf4j
 @RequiredArgsConstructor
 public class MySqlMetadataExtractor implements MetadataExtractor {
     private final SchemaFilter schemaFilter;
@@ -31,18 +29,18 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
     public List<Schema> extractSchemas(Connection connection) {
         List<Schema> schemas = new ArrayList<>();
         ResultSet rsCatalogs = null;
+
+        LoggingUtility.debug("Fetching catalogs (databases) from metadata...");
         try {
             DatabaseMetaData metaData = connection.getMetaData();
             rsCatalogs = metaData.getCatalogs();
 
-            log.debug("Fetching catalogs (databases) from metadata...");
-
             while (rsCatalogs.next()) {
                 String catalogName = rsCatalogs.getString("TABLE_CAT");
-                log.debug("Found catalog: {}", catalogName);
+                LoggingUtility.debug("Found catalog: {}", catalogName);
 
                 if (schemaFilter.isSystemSchema(catalogName) || !schemaFilter.isTargetSchema(catalogName)) {
-                    log.debug("Skipping schema: {}", catalogName);
+                    LoggingUtility.debug("Skipping schema: {}", catalogName);
                     continue;
                 }
 
@@ -54,19 +52,19 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
                         .build();
 
                 schemas.add(schema);
-                log.info("Added schema: {}", catalogName);
+                LoggingUtility.debug("Added schema: {}", catalogName);
             }
 
-            log.info("Schema extraction completed. Total schemas: {}", schemas.size());
+            LoggingUtility.debug("Total schemas extracted: {}", schemas.size());
         } catch (Exception e) {
-            log.error("Error extracting schemas", e);
-            throw new RuntimeException(e);
+            LoggingUtility.error("Error extracting schemas", e);
+            throw new MetadataExtractionException("Error extracting schemas", e);
         } finally {
             if (rsCatalogs != null) {
                 try {
                     rsCatalogs.close();
                 } catch (SQLException e) {
-                    log.warn("Failed to close ResultSet", e);
+                    LoggingUtility.warn("Failed to close ResultSet", e);
                 }
             }
         }
@@ -86,13 +84,13 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
         List<Table> tables = new ArrayList<>();
 
         try (ResultSet rsTables = metaData.getTables(schemaName, null, "%", new String[]{"TABLE"})) {
-            log.debug("Fetching tables for schema: {}", schemaName);
+            LoggingUtility.debug("Fetching tables for schema: {}", schemaName);
 
             while (rsTables.next()) {
                 String tableName = rsTables.getString("TABLE_NAME");
 
                 if (!schemaFilter.isTableIncluded(tableName)) {
-                    log.debug("Skipping table: {}", tableName);
+                    LoggingUtility.debug("Table {} is filtered out", tableName);
                     continue;
                 }
 
@@ -100,7 +98,7 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
 
                 if (!"TABLE".equalsIgnoreCase(tableType)) continue;
 
-                log.info("Found table: {}", tableName);
+                LoggingUtility.debug("Found table: {}", tableName);
 
                 List<Column> columns = extractColumns(metaData, schemaName, tableName);
                 List<ForeignKey> foreignKeys = extractForeignKeys(metaData, schemaName, tableName);
@@ -121,8 +119,8 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
             }
 
         } catch (Exception e) {
-            log.error("Error extracting tables", e);
-            throw new RuntimeException(e);
+            LoggingUtility.error("Error extracting tables for schema: {}", schemaName, e);
+            throw new MetadataExtractionException("Error extracting tables for schema: " + schemaName, e);
         }
 
         return tables;
@@ -149,7 +147,8 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
                 }
             }
         } catch (SQLException e) {
-            log.warn("Error retrieving primary keys for {}.{}", schemaName, tableName, e);
+            LoggingUtility.error("Error retrieving primary keys for {}.{}", schemaName, tableName, e);
+            throw new MetadataExtractionException("Error retrieving primary keys for " + schemaName + "." + tableName, e);
         }
 
         Set<String> uniqueColumns = new HashSet<>();
@@ -161,13 +160,13 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
                 }
             }
         } catch (SQLException e) {
-            log.warn("Error retrieving unique columns for {}.{}", schemaName, tableName, e);
+            LoggingUtility.error("Error retrieving unique columns for {}.{}", schemaName, tableName, e);
+            throw new MetadataExtractionException("Error retrieving unique columns for " + schemaName + "." + tableName, e);
         }
 
         try (ResultSet rs = metaData.getColumns(schemaName, null, tableName, "%")) {
             while (rs.next()) {
                 String columnName = rs.getString("COLUMN_NAME");
-                log.debug("Found column: {}", columnName);
 
                 int dataType = rs.getInt("DATA_TYPE");
                 boolean isAutoIncrement = "YES".equalsIgnoreCase(rs.getString("IS_AUTOINCREMENT"));
@@ -210,8 +209,8 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
                 columns.add(column);
             }
         } catch (SQLException e) {
-            log.error("Error extracting columns for {}.{}", schemaName, tableName, e);
-            throw new RuntimeException(e);
+            LoggingUtility.error("Error extracting columns for {}.{}", schemaName, tableName, e);
+            throw new MetadataExtractionException("Error extracting columns for " + schemaName + "." + tableName, e);
         }
 
         return columns;
@@ -244,8 +243,8 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
                 foreignKeys.add(foreignKey);
             }
         } catch (SQLException e) {
-            log.error("Error extracting foreign key for {}.{}", schemaName, tableName, e);
-            throw new RuntimeException(e);
+            LoggingUtility.error("Error extracting foreign keys for {}.{}", schemaName, tableName, e);
+            throw new MetadataExtractionException("Error extracting foreign keys for " + schemaName + "." + tableName, e);
         }
 
         return foreignKeys;
@@ -276,8 +275,8 @@ public class MySqlMetadataExtractor implements MetadataExtractor {
                 constraintMap.computeIfAbsent(indexName, k -> new ArrayList<>()).add(columnName);
             }
         } catch (SQLException e) {
-            log.error("Error extracting unique constraint for {}.{}", schemaName, tableName, e);
-            throw new RuntimeException(e);
+            LoggingUtility.error("Error extracting unique constraints for {}.{}", schemaName, tableName, e);
+            throw new MetadataExtractionException("Error extracting unique constraints for " + schemaName + "." + tableName, e);
         }
 
         List<UniqueConstraint> uniqueConstraints = new ArrayList<>();

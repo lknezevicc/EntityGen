@@ -6,8 +6,6 @@ import lombok.*;
  * Represents a column in a database table.
  */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 @ToString
 public class Column {

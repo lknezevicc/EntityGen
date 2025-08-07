@@ -7,15 +7,25 @@ import hr.lknezevic.entitygen.model.template.TemplateFactory;
 import hr.lknezevic.entitygen.model.template.common.Entity;
 import hr.lknezevic.entitygen.model.template.common.Relation;
 import hr.lknezevic.entitygen.model.template.modules.strategies.RelationRenderingStrategy;
-import hr.lknezevic.entitygen.utils.AnnotationUtil;
 import hr.lknezevic.entitygen.utils.RelationRenderingUtil;
 import hr.lknezevic.entitygen.utils.TemplateUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Strategy for rendering entity relations in templates.
+ */
 public class EntityRelationRendering implements RelationRenderingStrategy {
 
+    /**
+     * Renders a relation for an entity using a predefined template.
+     *
+     * @param sourceEntity the source entity of the relation
+     * @param relation the relation to be rendered
+     * @param targetEntity the target entity of the relation
+     * @return a formatted string representing the relation in the entity
+     */
     @Override
     public String render(Entity sourceEntity, Relation relation, Entity targetEntity) {
         return switch (relation.getType()) {
@@ -81,13 +91,25 @@ public class EntityRelationRendering implements RelationRenderingStrategy {
 
     private String renderManyToMany(Relation relation, Entity targetEntity) {
         String comment = buildRelationComment(relation.getType().name(), targetEntity.getClassName());
-        
-        String manyToManyParams = RelationRenderingUtil.buildManyToManyParams(relation);
-        String joinTableAnnotations = relation.getMappedBy() == null ? buildJoinTableAnnotations(relation) : "";
         String collectionType = (relation.getCollectionType() == CollectionType.LIST) ?
                 CollectionType.LIST.getValue() :
                 CollectionType.SET.getValue();
         String collectionInit = TemplateConst.getCollectionImplementation(relation.getCollectionType());
+
+        if (relation.getMappedBy() != null) {
+            return comment + TemplateConst.NEW_LINE +
+                    TemplateFactory.builder()
+                            .template(TemplateConst.MANY_TO_MANY_MAPPED_BY_RELATION)
+                            .build()
+                            .addParam(relation.getMappedBy())
+                            .addParams(collectionType, targetEntity.getClassName(), relation.getFieldName())
+                            .addParams(collectionInit)
+                            .format();
+        }
+
+        String manyToManyParams = RelationRenderingUtil.buildManyToManyParams(relation);
+        String joinTableAnnotations = relation.getMappedBy() == null ? buildJoinTableAnnotations(relation) : "";
+
         
         return comment + TemplateConst.NEW_LINE +
                 TemplateFactory.builder()
@@ -123,14 +145,14 @@ public class EntityRelationRendering implements RelationRenderingStrategy {
         }
 
         if (relation.getType() == RelationType.MANY_TO_ONE) {
-            return AnnotationUtil.buildJoinColumns(
+            return TemplateUtil.buildJoinColumns(
                     relation.getJoinColumns(),
                     relation.getReferencedColumns(),
                     sourceEntity.isCompositeKey() || targetEntity.isCompositeKey(),
                     additionalParams
             );
         } else {
-            return AnnotationUtil.buildJoinColumns(
+            return TemplateUtil.buildJoinColumns(
                     relation.getJoinColumns(),
                     relation.getReferencedColumns(),
                     false,
@@ -140,14 +162,14 @@ public class EntityRelationRendering implements RelationRenderingStrategy {
     }
 
     private String buildJoinTableAnnotations(Relation relation) {
-        return AnnotationUtil.buildJoinTable(relation);
+        return TemplateUtil.buildJoinTable(relation);
     }
 
     private String buildOneToOneAnnotations(Entity sourceEntity, Relation relation, Entity targetEntity) {
         List<String> annotations = new ArrayList<>();
 
         if (relation.getMapsId() != null) {
-            annotations.add(AnnotationUtil.buildMapsId(relation));
+            annotations.add(TemplateUtil.buildMapsId(relation));
         }
 
         String joinColumnAnnotations = buildJoinColumnAnnotations(sourceEntity, relation, targetEntity);

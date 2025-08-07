@@ -1,6 +1,7 @@
 package hr.lknezevic.entitygen.providers;
 
 import hr.lknezevic.entitygen.enums.SpringProperties;
+import hr.lknezevic.entitygen.exceptions.unchecked.ConnectionProviderException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,6 +9,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
+/**
+ * Provides a database connection using properties loaded from a specified file.
+ */
 public class PropertiesConnectionProvider extends AbstractConnectionProvider {
     private final Properties properties;
 
@@ -16,7 +20,7 @@ public class PropertiesConnectionProvider extends AbstractConnectionProvider {
         try (InputStream is = Files.newInputStream(Path.of(propertiesFile))) {
             properties.load(is);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load properties from " + propertiesFile, e);
+            throw new ConnectionProviderException("Failed to load properties from " + propertiesFile, e);
         }
     }
 

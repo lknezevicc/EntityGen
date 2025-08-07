@@ -4,11 +4,13 @@ import hr.lknezevic.entitygen.config.UserConfig;
 import hr.lknezevic.entitygen.enums.ComponentType;
 import hr.lknezevic.entitygen.model.template.TemplateConst;
 import hr.lknezevic.entitygen.model.template.common.Entity;
+import hr.lknezevic.entitygen.model.template.common.Field;
 import hr.lknezevic.entitygen.model.template.modules.FieldModule;
 import hr.lknezevic.entitygen.model.template.modules.ImportModule;
 import hr.lknezevic.entitygen.model.template.modules.PrimaryKeyModule;
 import hr.lknezevic.entitygen.model.template.modules.RelationModule;
 import hr.lknezevic.entitygen.utils.TemplateUtil;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -17,9 +19,8 @@ import java.util.Map;
 /**
  * Abstract class for template models that provides common functionality
  * for constructing entity-related templates.
- *
- * @author leonknezevic
  */
+@Getter
 @RequiredArgsConstructor
 public abstract class AbstractTemplateModel implements TemplateModel {
     protected final ComponentType componentType;
@@ -37,9 +38,13 @@ public abstract class AbstractTemplateModel implements TemplateModel {
     }
 
     protected String getNonPrimaryFields() {
-        if (entity.getNonPrimaryKeyFields().isEmpty()) return "";
+        List<Field> fieldsToProcess = componentType == ComponentType.EMBEDDABLE ?
+                entity.getEmbeddedId().getFields() :
+                entity.getNonPrimaryKeyFields();
 
-        List<String> params = entity.getNonPrimaryKeyFields().stream()
+        if (fieldsToProcess.isEmpty()) return "";
+
+        List<String> params = fieldsToProcess.stream()
                 .map(field ->
                         FieldModule.builder()
                                 .componentType(componentType)
@@ -48,7 +53,10 @@ public abstract class AbstractTemplateModel implements TemplateModel {
                                 .construct()
                 ).toList();
 
-        return String.join(TemplateConst.COMMA_JOIN_NEWLINE, params);
+        if (componentType == ComponentType.DTO || componentType == ComponentType.SERVICE_IMPL)
+            return String.join(TemplateConst.COMMA_JOIN_NEWLINE, params);
+        else
+            return String.join(TemplateConst.NEW_LINE, params);
     }
 
     protected String getRelationFields() {
@@ -68,7 +76,10 @@ public abstract class AbstractTemplateModel implements TemplateModel {
                             .construct();
                 }).toList();
 
-        return String.join(TemplateConst.COMMA_JOIN_NEWLINE, params);
+        if (componentType == ComponentType.DTO || componentType == ComponentType.SERVICE_IMPL)
+            return String.join(TemplateConst.COMMA_JOIN_NEWLINE, params);
+        else
+            return String.join(TemplateConst.NEW_LINE, params);
     }
 
     @Override

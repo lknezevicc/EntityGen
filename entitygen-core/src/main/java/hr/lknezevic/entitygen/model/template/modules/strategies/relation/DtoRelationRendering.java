@@ -9,8 +9,19 @@ import hr.lknezevic.entitygen.model.template.common.Relation;
 import hr.lknezevic.entitygen.model.template.modules.strategies.RelationRenderingStrategy;
 import hr.lknezevic.entitygen.utils.TemplateUtil;
 
+/**
+ * Strategy for rendering DTO relations in templates.
+ */
 public class DtoRelationRendering implements RelationRenderingStrategy {
 
+    /**
+     * Renders a relation for a DTO (Data Transfer Object) using a predefined template.
+     *
+     * @param sourceEntity the source entity of the relation
+     * @param relation the relation to be rendered
+     * @param targetEntity the target entity of the relation
+     * @return a formatted string representing the relation in the DTO
+     */
     @Override
     public String render(Entity sourceEntity, Relation relation, Entity targetEntity) {
         RelationType relationType = relation.getType();
@@ -30,7 +41,6 @@ public class DtoRelationRendering implements RelationRenderingStrategy {
                     .addParams(CollectionType.LIST.getValue(), targetIdType, fieldName)
                     .format();
         }
-
     }
 
     private String getTargetIdType(Entity targetEntity) {

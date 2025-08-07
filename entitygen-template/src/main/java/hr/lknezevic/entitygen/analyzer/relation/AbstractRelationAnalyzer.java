@@ -1,6 +1,6 @@
-package hr.lknezevic.entitygen.builder.relation;
+package hr.lknezevic.entitygen.analyzer.relation;
 
-import hr.lknezevic.entitygen.builder.RelationBuilder;
+import hr.lknezevic.entitygen.analyzer.RelationBuilder;
 import hr.lknezevic.entitygen.enums.CascadeType;
 import hr.lknezevic.entitygen.enums.CollectionType;
 import hr.lknezevic.entitygen.enums.FetchType;
@@ -13,11 +13,15 @@ import hr.lknezevic.entitygen.model.Table;
 import java.util.List;
 import java.util.Set;
 
-public abstract class AbstractRelationBuilder implements RelationAnalyzer {
+/**
+ * Abstract class for building relations in an entity.
+ * Provides common functionality for relation builders.
+ */
+public abstract class AbstractRelationAnalyzer implements RelationAnalyzer {
     private final RelationBuilder parent;
     protected final Table table;
 
-    public AbstractRelationBuilder(RelationBuilder parent) {
+    public AbstractRelationAnalyzer(RelationBuilder parent) {
         this.parent = parent;
         this.table = parent.getTable();
     }
@@ -34,8 +38,8 @@ public abstract class AbstractRelationBuilder implements RelationAnalyzer {
         parent.getProcessedRelations().add(relationKey);
     }
 
-    protected boolean isRelationProcessed(String relationKey) {
-        return parent.getProcessedRelations().contains(relationKey);
+    protected boolean relationNotProcessed(String relationKey) {
+        return !parent.getProcessedRelations().contains(relationKey);
     }
 
     protected FetchType getFetchType() {
@@ -52,5 +56,9 @@ public abstract class AbstractRelationBuilder implements RelationAnalyzer {
     
     protected CollectionType getCollectionType(List<ForeignKey> foreignKeys) {
         return RelationConfigHelper.getCollectionType(foreignKeys);
+    }
+
+    protected boolean isOptional(ForeignKey foreignKey) {
+        return RelationConfigHelper.isOptional(foreignKey);
     }
 }

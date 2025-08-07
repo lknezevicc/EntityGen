@@ -4,8 +4,6 @@ import lombok.Getter;
 
 /**
  * Enum representing different collection types.
- *
- * @author leonknezevic
  */
 @Getter
 public enum CollectionType {

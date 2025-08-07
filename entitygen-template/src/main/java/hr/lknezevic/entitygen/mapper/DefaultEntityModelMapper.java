@@ -18,13 +18,17 @@ import java.util.stream.Collectors;
 /**
  * Default implementation of the EntityModelMapper interface.
  * This class maps database tables to entity models.
- *
- * @author leonknezevic
  */
 @RequiredArgsConstructor
 public class DefaultEntityModelMapper implements EntityModelMapper {
     private final UserConfig userConfig;
 
+    /**
+     * Maps a list of database tables to a list of entity models.
+     *
+     * @param tables list of database tables to map
+     * @return list of mapped entity models
+     */
     @Override
     public List<Entity> mapEntities(List<Table> tables) {
         List<Entity> entities = new ArrayList<>();

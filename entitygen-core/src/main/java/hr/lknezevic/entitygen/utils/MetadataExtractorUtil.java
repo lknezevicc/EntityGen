@@ -6,8 +6,6 @@ import java.sql.Types;
 
 /**
  * Utility class for database metadata extraction.
- *
- * @author leonknezevic
  */
 public class MetadataExtractorUtil {
 

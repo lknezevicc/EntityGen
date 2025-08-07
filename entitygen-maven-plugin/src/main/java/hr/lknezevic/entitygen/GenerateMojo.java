@@ -2,6 +2,7 @@ package hr.lknezevic.entitygen;
 
 import hr.lknezevic.entitygen.config.UserConfig;
 import hr.lknezevic.entitygen.config.UserConfigProperties;
+import hr.lknezevic.entitygen.exceptions.unchecked.ConfigurationLoadException;
 import hr.lknezevic.entitygen.model.Schema;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -9,9 +10,12 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import java.io.IOException;
 import java.util.List;
 
+/**
+  Maven Mojo for generating entity classes based on the provided configuration.
+ * This Mojo reads the configuration from a properties file and generates entities accordingly.
+ */
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
 public class GenerateMojo extends AbstractMojo {
     @Parameter(property = "springConfigPath",
@@ -24,6 +28,12 @@ public class GenerateMojo extends AbstractMojo {
     @Parameter(property = "activeProfile", defaultValue = "default")
     private String activeProfile;
 
+    /**
+     * Executes the Mojo to generate entity classes based on the provided configuration.
+     * It reads the configuration from the specified properties file and generates entities accordingly.
+     *
+     * @throws MojoExecutionException if an error occurs during execution
+     */
     @Override
     public void execute() throws MojoExecutionException {
         getLog().info("EntityGen running...");
@@ -31,13 +41,17 @@ public class GenerateMojo extends AbstractMojo {
         UserConfig userConfig = UserConfig.defaultConfig();
         try {
             userConfig = new UserConfigProperties(springConfigPath, basePackage).createUserConfig();
-        } catch (IOException e) {
-            getLog().error("Failed to load properties from " + springConfigPath, e);
-            getLog().info("Using default properties");
+        } catch (ConfigurationLoadException e) {
+            getLog().warn(String.format("Failed to load properties from %s, using default properties", springConfigPath), e);
         }
 
         EntityGenRunner entityGenRunner = new EntityGenRunner(userConfig, springConfigPath, activeProfile);
         List<Schema> schemas = entityGenRunner.generate();
+
+        if (schemas.isEmpty()) {
+            getLog().warn("No schemas found. Please check your configuration.");
+            return;
+        }
 
         EntityTemplateRunner entityTemplateRunner = new EntityTemplateRunner(schemas.getLast().getTables(), userConfig);
         entityTemplateRunner.generateComponents();

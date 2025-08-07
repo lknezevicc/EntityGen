@@ -11,8 +11,6 @@ import java.util.List;
  * Represents an entity in the context of a database.
  * Contains metadata about the entity such as its class name, table name,
  * schema, catalog, fields, relations, unique constraints, and whether it has a composite key or embedded ID.
- *
- * @author leonknezevic
  */
 @Data
 @Builder
@@ -33,10 +31,20 @@ public class Entity {
     private boolean compositeKey;
     private EmbeddedId embeddedId;
 
+    /**
+     * Returns a list of fields that are primary keys in this entity.
+     *
+     * @return a list of primary key field names
+     */
     public List<Field> getPrimaryKeyFields() {
         return fields.stream().filter(Field::isPrimaryKey).toList();
     }
 
+    /**
+     * Returns a list of fields that are not primary keys in this entity.
+     *
+     * @return a list of non-primary key field names
+     */
     public List<Field> getNonPrimaryKeyFields() {
         return fields.stream().filter(field -> !field.isPrimaryKey()).toList();
     }

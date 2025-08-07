@@ -10,8 +10,6 @@ import java.util.List;
 /**
  * Represents a Data Transfer Object (DTO) template model.
  * This model is used to generate the body of a DTO class based on the provided template provider object.
- *
- * @author leonknezevic
  */
 @Getter
 public class DtoTemplateModel extends AbstractTemplateModel {
@@ -20,6 +18,11 @@ public class DtoTemplateModel extends AbstractTemplateModel {
         super(tpo.componentType(), tpo.entity(), tpo.userConfig(), tpo.entityByClassName(), imports);
     }
 
+    /**
+     * Returns the body for the DTO Freemarker template.
+     *
+     * @return formatted string representing the DTO model body
+     */
     @Override
     public String getModelBody() {
         return TemplateUtil.joinParams(TemplateConst.COMMA_JOIN_NEWLINE,

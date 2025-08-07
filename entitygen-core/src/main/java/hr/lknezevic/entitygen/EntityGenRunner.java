@@ -1,44 +1,49 @@
 package hr.lknezevic.entitygen;
 
 import hr.lknezevic.entitygen.config.UserConfig;
+import hr.lknezevic.entitygen.exceptions.unchecked.MetadataExtractionException;
 import hr.lknezevic.entitygen.extractor.MetadataExtractor;
 import hr.lknezevic.entitygen.extractor.MetadataExtractorFactory;
 import hr.lknezevic.entitygen.model.Schema;
 import hr.lknezevic.entitygen.providers.ConnectionProvider;
 import hr.lknezevic.entitygen.providers.PropertiesConnectionProvider;
 import hr.lknezevic.entitygen.providers.YamlConnectionProvider;
-import lombok.extern.slf4j.Slf4j;
+import hr.lknezevic.entitygen.utils.LoggingUtility;
 
 import java.sql.Connection;
 import java.util.List;
 
-@Slf4j
+/**
+ * Main runner class for the EntityGen application.
+ * This class initializes the connection provider based on the user configuration and performs metadata extraction.
+ * It supports both properties and YAML configuration files.
+ */
 public class EntityGenRunner {
     private final UserConfig userConfig;
     private final ConnectionProvider connectionProvider;
 
     public EntityGenRunner(UserConfig userConfig, String springConfigPath, String activeProfile) {
         this.userConfig = userConfig;
-        String resolvedConfigPath = resolveConfigPath(springConfigPath, activeProfile);
-        log.info("Using config path: {}", resolvedConfigPath);
-        connectionProvider = createConnectionProvider(resolvedConfigPath);
+        connectionProvider = createConnectionProvider(resolveConfigPath(springConfigPath, activeProfile));
     }
 
+    /**
+     * Generates metadata by extracting schemas from the connected database.
+     *
+     * @return a list of schemas extracted from the database.
+     */
     public List<Schema> generate() {
-        log.info("Starting metadata extraction...");
+        LoggingUtility.info("Starting metadata extraction...");
 
         try (Connection connection = connectionProvider.getConnection()) {
             String databaseProductName = connection.getMetaData().getDatabaseProductName().toLowerCase();
-            log.info("Connected to database: {}", databaseProductName);
+            LoggingUtility.info("Database product name: {}", databaseProductName);
 
             MetadataExtractor metadataExtractor = MetadataExtractorFactory.getMetadataExtractor(userConfig, databaseProductName);
 
-            List<Schema> schemas = metadataExtractor.extractSchemas(connection);
-            log.info("Extraction completed. Found {} schemas.", schemas.size());
-
-            return schemas;
+            return metadataExtractor.extractSchemas(connection);
         } catch (Exception e) {
-            throw new RuntimeException("Error during metadata extraction", e);
+            throw new MetadataExtractionException("Failed to extract metadata", e);
         }
     }
 
@@ -52,10 +57,10 @@ public class EntityGenRunner {
 
     private ConnectionProvider createConnectionProvider(String path) {
         if (path.endsWith(".properties")) {
-            log.debug("Creating PropertiesConnectionProvider...");
+            LoggingUtility.debug("Creating PropertiesConnectionProvider...");
             return new PropertiesConnectionProvider(path);
         } else if (path.endsWith(".yaml") || path.endsWith(".yml")) {
-            log.debug("Creating YamlConnectionProvider...");
+            LoggingUtility.debug("Creating YamlConnectionProvider...");
             return new YamlConnectionProvider(path);
         } else {
             throw new IllegalArgumentException("Unsupported config file: " + path);

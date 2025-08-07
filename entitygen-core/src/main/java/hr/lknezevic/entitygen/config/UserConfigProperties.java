@@ -1,21 +1,21 @@
 package hr.lknezevic.entitygen.config;
 
 import hr.lknezevic.entitygen.enums.SpringProperties;
-import lombok.extern.slf4j.Slf4j;
+import hr.lknezevic.entitygen.exceptions.unchecked.ConfigurationLoadException;
+import hr.lknezevic.entitygen.utils.LoggingUtility;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Class for loading user-defined configuration properties from application.properties file.
- *
- * @author leonknezevic
  */
-@Slf4j
 public class UserConfigProperties {
     private static final List<SpringProperties> PROPERTIES_TO_EXCLUDE =
             List.of(SpringProperties.URL, SpringProperties.USER, SpringProperties.PASSWORD, SpringProperties.DRIVER);
@@ -24,7 +24,7 @@ public class UserConfigProperties {
     private final String basePackage;
     private final String outputDirectory;
 
-    public UserConfigProperties(String propertiesFile, String basePackage) throws IOException {
+    public UserConfigProperties(String propertiesFile, String basePackage) throws ConfigurationLoadException {
         Path propertiesPath = Path.of(propertiesFile);
         this.basePackage = basePackage;
         this.outputDirectory = generateOutputDirectory(propertiesPath);
@@ -37,13 +37,11 @@ public class UserConfigProperties {
         try (InputStream is = Files.newInputStream(propertiesPath)) {
             properties.load(is);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load properties from " + propertiesFile, e);
+            LoggingUtility.error("Failed to load properties from file: {}", propertiesFile, e);
+            throw new ConfigurationLoadException("Could not load properties from " + propertiesFile, e);
         }
     }
 
-    /**
-     * Creates UserConfig with user defined properties.
-     */
     public UserConfig createUserConfig() {
         UserConfig.UserConfigBuilder builder = UserConfig.builder();
         builder.entityPackage(basePackage + ".entity");
@@ -67,7 +65,8 @@ public class UserConfigProperties {
         return builder.build();
     }
 
-    private void mapPropertyToConfig(UserConfig.UserConfigBuilder builder, SpringProperties property, String value) {
+    private void mapPropertyToConfig(Object builderObj, SpringProperties property, String value) {
+        var builder = (UserConfig.UserConfigBuilder) builderObj;
         switch (property) {
             // Package Configuration
             case ENTITY_PACKAGE -> builder.entityPackage(value);
@@ -97,7 +96,7 @@ public class UserConfigProperties {
             case TARGET_SCHEMA -> builder.targetSchema(value);
             case INCLUDE_TABLES -> builder.includeTables(extractFromProperties(value));
             
-            default -> log.error("Invalid property value for property [{}]", property);
+            default -> LoggingUtility.warn("Unknown property: {} with value: {}", property.getValue(), value);
         }
     }
 

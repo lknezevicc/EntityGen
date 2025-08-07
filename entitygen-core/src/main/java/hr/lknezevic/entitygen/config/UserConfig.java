@@ -11,8 +11,6 @@ import java.util.List;
 /**
  * Configuration class for EntityGen Maven Plugin
  * Maps all properties from application.properties to typed fields
- *
- * @author leonknezevic
  */
 @Data
 @Builder

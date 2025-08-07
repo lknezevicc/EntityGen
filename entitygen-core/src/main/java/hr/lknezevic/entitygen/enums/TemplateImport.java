@@ -5,8 +5,6 @@ import lombok.Getter;
 /**
  * Enum representing import for Java and other libraries.
  * The order determines the priority of imports when generating code.
- *
- * @author leonknezevic
  */
 @Getter
 public enum TemplateImport {

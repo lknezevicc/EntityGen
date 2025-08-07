@@ -4,8 +4,6 @@ import lombok.Getter;
 
 /**
  * Enum representing different types of cascade operations in JPA.
- *
- * @author leonknezevic
  */
 @Getter
 public enum CascadeType {

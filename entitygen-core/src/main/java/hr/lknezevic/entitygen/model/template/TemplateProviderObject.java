@@ -9,8 +9,6 @@ import java.util.Map;
 /**
  * Represents an object that provides context for template generation.
  * It includes the component type, entity, user configuration, and a map of entities by class name.
- *
- * @author leonknezevic
  */
 public record TemplateProviderObject(
         ComponentType componentType,

@@ -1,22 +1,28 @@
-package hr.lknezevic.entitygen.builder.imports;
+package hr.lknezevic.entitygen.analyzer.imports;
 
 import hr.lknezevic.entitygen.enums.ComponentType;
 import hr.lknezevic.entitygen.enums.RelationType;
 import hr.lknezevic.entitygen.enums.TemplateImport;
 import hr.lknezevic.entitygen.model.template.TemplateProviderObject;
 import hr.lknezevic.entitygen.utils.TemplateUtil;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Set;
 
-@Slf4j
+/**
+ * Analyzes and provides the necessary imports for a Service Implementation class.
+ */
 public class ServiceImplImportAnalyzer extends AbstractImportAnalyzer {
 
     public ServiceImplImportAnalyzer(TemplateProviderObject tpo) {
         super(tpo.entity(), tpo.userConfig(), tpo.entityByClassName());
     }
 
+    /**
+     * Returns a list of imports required for the Service Implementation class.
+     *
+     * @return List of import strings
+     */
     @Override
     public List<String> getImports() {
         imports.addAll(Set.of(
@@ -25,8 +31,7 @@ public class ServiceImplImportAnalyzer extends AbstractImportAnalyzer {
                 TemplateImport.JAVA_LIST
         ));
 
-        if (hasAdditionalImports())
-            analyzeAdditionalImports();
+        analyzeAdditionalImports();
 
         return getCombinedImports();
     }
@@ -39,11 +44,6 @@ public class ServiceImplImportAnalyzer extends AbstractImportAnalyzer {
         otherImports.add(TemplateUtil.getComponentImport(ComponentType.DTO, userConfig, entity.getClassName()));
 
         this.analyzeRelations();
-    }
-
-    @Override
-    protected boolean hasAdditionalImports() {
-        return true;
     }
 
     @Override

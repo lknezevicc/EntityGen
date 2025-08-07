@@ -11,8 +11,6 @@ import java.util.List;
  * Represents a template model for a controller in the EntityGen framework.
  * This class extends AbstractTemplateModel and provides the body of the controller
  * using a predefined template.
- *
- * @author leonknezevic
  */
 @Getter
 public class ControllerTemplateModel extends AbstractTemplateModel {
@@ -21,6 +19,11 @@ public class ControllerTemplateModel extends AbstractTemplateModel {
         super(tpo.componentType(), tpo.entity(), tpo.userConfig(), tpo.entityByClassName(), imports);
     }
 
+    /**
+     * Returns the body for the controller Freemarker template.
+     *
+     * @return formatted string representing the controller model body
+     */
     @Override
     public String getModelBody() {
         return TemplateFactory.builder()

@@ -7,8 +7,6 @@ import java.util.List;
 
 /**
  * Interface for mapping database tables to entity models.
- *
- * @author leonknezevic
  */
 public interface EntityModelMapper {
     List<Entity> mapEntities(List<Table> tables);

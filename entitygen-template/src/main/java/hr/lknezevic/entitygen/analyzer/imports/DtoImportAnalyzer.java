@@ -1,4 +1,4 @@
-package hr.lknezevic.entitygen.builder.imports;
+package hr.lknezevic.entitygen.analyzer.imports;
 
 import hr.lknezevic.entitygen.enums.ComponentType;
 import hr.lknezevic.entitygen.model.template.TemplateProviderObject;
@@ -7,16 +7,23 @@ import hr.lknezevic.entitygen.utils.TemplateUtil;
 
 import java.util.List;
 
+/**
+ * Analyzes and provides the necessary imports for a Data Transfer Object (DTO) class.
+ */
 public class DtoImportAnalyzer extends AbstractImportAnalyzer {
 
     public DtoImportAnalyzer(TemplateProviderObject tpo) {
         super(tpo.entity(), tpo.userConfig(), tpo.entityByClassName());
     }
 
+    /**
+     * Returns a list of imports required for the DTO class.
+     *
+     * @return List of import strings
+     */
     @Override
     public List<String> getImports() {
-        if (hasAdditionalImports())
-            analyzeAdditionalImports();
+        analyzeAdditionalImports();
 
         return getCombinedImports();
     }
@@ -35,10 +42,5 @@ public class DtoImportAnalyzer extends AbstractImportAnalyzer {
 
         analyzeFields();
         analyzeRelations();
-    }
-
-    @Override
-    protected boolean hasAdditionalImports() {
-        return true;
     }
 }

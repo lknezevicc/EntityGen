@@ -1,16 +1,22 @@
 package hr.lknezevic.entitygen.model.template.modules.strategies.field;
 
-import hr.lknezevic.entitygen.model.template.TemplateFactory;
 import hr.lknezevic.entitygen.model.template.TemplateConst;
+import hr.lknezevic.entitygen.model.template.TemplateFactory;
 import hr.lknezevic.entitygen.model.template.common.Field;
 import hr.lknezevic.entitygen.model.template.modules.strategies.FieldRenderingStrategy;
-import hr.lknezevic.entitygen.utils.AnnotationUtil;
+import hr.lknezevic.entitygen.utils.TemplateUtil;
 
 /**
- * Strategy for Embeddable field rendering
+ * Strategy for rendering embeddable fields in entities.
  */
 public class EmbeddableFieldStrategy implements FieldRenderingStrategy {
-    
+
+    /**
+     * Renders a field for an embeddable entity using a predefined template.
+     *
+     * @param field the field to be rendered
+     * @return a formatted string representing the field in the embeddable entity
+     */
     @Override
     public String render(Field field) {
         return TemplateFactory.builder()
@@ -21,7 +27,7 @@ public class EmbeddableFieldStrategy implements FieldRenderingStrategy {
                 TemplateFactory.builder()
                         .template(TemplateConst.REGULAR_FIELD)
                         .build()
-                        .addParams(AnnotationUtil.buildColumnParams(field), field.getJavaType(), field.getName())
+                        .addParams(TemplateUtil.buildColumnParams(field), field.getJavaType(), field.getName())
                         .format();
     }
 

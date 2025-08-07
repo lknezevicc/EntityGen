@@ -4,8 +4,6 @@ import lombok.Getter;
 
 /**
  * Enum representing various Spring properties used in the application.
- *
- * @author leonknezevic
  */
 @Getter
 public enum SpringProperties {

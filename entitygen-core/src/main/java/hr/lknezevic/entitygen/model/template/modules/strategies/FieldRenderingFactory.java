@@ -10,7 +10,14 @@ import hr.lknezevic.entitygen.model.template.modules.strategies.field.ServiceImp
  * Factory for creating field rendering strategies based on component type.
  */
 public class FieldRenderingFactory {
-    
+
+    /**
+     * Creates a field rendering strategy based on the provided component type.
+     *
+     * @param componentType the type of component
+     * @return a FieldRenderingStrategy instance
+     * @throws IllegalArgumentException if the component type is unsupported
+     */
     public static FieldRenderingStrategy createStrategy(ComponentType componentType) {
         return switch (componentType) {
             case ENTITY ->  new EntityFieldStrategy();

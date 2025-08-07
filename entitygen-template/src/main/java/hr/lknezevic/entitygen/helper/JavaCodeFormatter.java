@@ -1,5 +1,7 @@
 package hr.lknezevic.entitygen.helper;
 
+import hr.lknezevic.entitygen.utils.LoggingUtility;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
@@ -14,8 +16,6 @@ import java.util.Map;
 
 /**
  * Class for formatting Java code using Eclipse's CodeFormatter.
- *
- * @author leonknezevic
  */
 public class JavaCodeFormatter {
     private final CodeFormatter formatter;
@@ -48,7 +48,7 @@ public class JavaCodeFormatter {
         options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ARGUMENTS_IN_METHOD_INVOCATION,
                 String.valueOf(DefaultCodeFormatterConstants.WRAP_COMPACT));
 
-        // Record component alignment (for newer Eclipse versions)
+        // Record component alignment
         options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_RECORD_COMPONENTS,
                 String.valueOf(DefaultCodeFormatterConstants.WRAP_COMPACT));
 
@@ -64,10 +64,15 @@ public class JavaCodeFormatter {
         return ToolFactory.createCodeFormatter(options);
     }
 
+    /**
+     * Formats the provided Java source code using Eclipse's CodeFormatter.
+     * If formatting fails, it performs basic cleanup to remove excessive newlines and whitespace.
+     *
+     * @param sourceCode the Java source code to format
+     * @return formatted Java source code
+     */
     public String formatJavaCode(String sourceCode) {
-        if (sourceCode == null || sourceCode.trim().isEmpty()) {
-            return sourceCode;
-        }
+        if (StringUtils.isEmpty(sourceCode)) return sourceCode;
 
         try {
             TextEdit edit = formatter.format(
@@ -86,7 +91,7 @@ public class JavaCodeFormatter {
             }
 
         } catch (MalformedTreeException | BadLocationException e) {
-            System.err.println("Eclipse formatter failed: " + e.getMessage());
+            LoggingUtility.warn("Eclipse formatter failed, falling back to basic cleanup: {}", e);
         }
 
         return basicCleanup(sourceCode);
@@ -97,14 +102,12 @@ public class JavaCodeFormatter {
                 .replaceAll("\\n{3,}", "\n\n")
                 .replaceAll("\\s+\\n", "\n")
                 .replaceAll("\\{\\s*\\n\\s*\\n", "{\n")
-                .replaceAll("\\n\\s*\\n\\s*\\}", "\n}");
+                .replaceAll("\\n\\s*\\n\\s*}", "\n}");
     }
 
     public String formatComponent(String sourceCode) {
-        if (sourceCode == null || sourceCode.trim().isEmpty()) {
-            return sourceCode;
-        }
-
-        return sourceCode.replaceAll("(?m)^(\\s*private\\s+.*?;)$", "$1\n");
+        return StringUtils.isEmpty(sourceCode) ?
+                sourceCode :
+                sourceCode.replaceAll("(?m)^(\\s*private\\s+.*?;)$", "$1\n");
     }
 }

@@ -5,6 +5,6 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class SpringConfig {
+public class SpringYamlConfig {
     private DataSourceConfig dataSourceConfig;
 }

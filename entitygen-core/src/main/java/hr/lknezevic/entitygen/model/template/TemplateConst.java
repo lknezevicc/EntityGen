@@ -5,8 +5,6 @@ import hr.lknezevic.entitygen.enums.CollectionType;
 /**
  * Centralized template formats for different component types.
  * Uses String.format() placeholders for dynamic content injection.
- *
- * @author leonknezevic
  */
 public class TemplateConst {
 
@@ -17,6 +15,9 @@ public class TemplateConst {
     public static final String COMPONENT_NAME = "%s%s";
     public static final String SIMPLE_IMPORT = "%s.%s";
     public static final String IMPORT_STATEMENT = "import %s;";
+
+    public static final String RELATION_FIELD_SINGLE = "%s %sId";
+    public static final String RELATION_FIELD_COLLECTION = "%s<%s> %sIds";
 
     public static final String SIMPLE_PRIMARY_KEY = """
             @Id
@@ -83,9 +84,6 @@ public class TemplateConst {
             @Lob
             @Column(%s)
             private %s %s;""";
-
-    public static final String RELATION_FIELD_SINGLE = "%s %sId";
-    public static final String RELATION_FIELD_COLLECTION = "%s<%s> %sIds";
     
     public static final String RELATION_COMMENT = """
             /**
@@ -110,6 +108,13 @@ public class TemplateConst {
     public static final String MANY_TO_MANY_RELATION = """
             @ManyToMany%s
             %s@ToString.Exclude
+            @EqualsAndHashCode.Exclude
+            @Builder.Default
+            private %s<%s> %s = %s;""";
+
+    public static final String MANY_TO_MANY_MAPPED_BY_RELATION = """
+            @ManyToMany(mappedBy = "%s")
+            @ToString.Exclude
             @EqualsAndHashCode.Exclude
             @Builder.Default
             private %s<%s> %s = %s;""";

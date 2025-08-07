@@ -10,8 +10,6 @@ import java.util.List;
 /**
  * Represents a template model for an embeddable entity.
  * It constructs the model body by generating fields based on the embedded ID of the entity.
- *
- * @author leonknezevic
  */
 @Getter
 public class EmbeddableTemplateModel extends AbstractTemplateModel {
@@ -20,6 +18,11 @@ public class EmbeddableTemplateModel extends AbstractTemplateModel {
         super(tpo.componentType(), tpo.entity(), tpo.userConfig(), tpo.entityByClassName(), imports);
     }
 
+    /**
+     * Returns the body for the embeddable Freemarker template.
+     *
+     * @return formatted string representing the embeddable model body
+     */
     @Override
     public String getModelBody() {
         List<String> fields = entity.getEmbeddedId().getFields()

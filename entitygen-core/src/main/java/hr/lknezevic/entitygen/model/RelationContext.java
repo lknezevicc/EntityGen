@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Context for managing relations between entities and tables.
+ * It holds all tables, all entities, and provides mappings for quick access
+ * to entities by table name and tables by name.
+ */
 @Data
 public class RelationContext {
     private final List<Table> allTables;

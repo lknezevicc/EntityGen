@@ -1,4 +1,4 @@
-package hr.lknezevic.entitygen.builder.imports;
+package hr.lknezevic.entitygen.analyzer.imports;
 
 import hr.lknezevic.entitygen.enums.ComponentType;
 import hr.lknezevic.entitygen.enums.TemplateImport;
@@ -7,18 +7,25 @@ import hr.lknezevic.entitygen.utils.TemplateUtil;
 
 import java.util.List;
 
+/**
+ * Analyzes and provides the necessary imports for a Spring Service class.
+ */
 public class ServiceImportAnalyzer extends AbstractImportAnalyzer {
 
     public ServiceImportAnalyzer(TemplateProviderObject tpo) {
         super(tpo.entity(), tpo.userConfig(), tpo.entityByClassName());
     }
 
+    /**
+     * Returns a list of imports required for the Service class.
+     *
+     * @return List of import strings
+     */
     @Override
     public List<String> getImports() {
         imports.add(TemplateImport.JAVA_LIST);
 
-        if (hasAdditionalImports())
-            analyzeAdditionalImports();
+        analyzeAdditionalImports();
 
         return getCombinedImports();
     }
@@ -28,8 +35,4 @@ public class ServiceImportAnalyzer extends AbstractImportAnalyzer {
         otherImports.add(TemplateUtil.getComponentImport(ComponentType.DTO, userConfig, entity.getClassName()));
     }
 
-    @Override
-    protected boolean hasAdditionalImports() {
-        return true;
-    }
 }

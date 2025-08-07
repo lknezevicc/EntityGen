@@ -2,8 +2,6 @@ package hr.lknezevic.entitygen.enums;
 
 /**
  * Enum representing different types of relations between entities.
- *
- * @author leonknezevic
  */
 public enum RelationType {
     ONE_TO_ONE,

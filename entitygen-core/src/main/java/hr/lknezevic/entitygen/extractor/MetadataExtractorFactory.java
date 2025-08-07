@@ -8,8 +8,6 @@ import hr.lknezevic.entitygen.filter.SchemaFilterImpl;
 
 /**
  * Factory class for creating instances of MetadataExtractor based on the database type.
- *
- * @author leonknezevic
  */
 public class MetadataExtractorFactory {
 
@@ -26,7 +24,7 @@ public class MetadataExtractorFactory {
         return switch (databaseProductName.toLowerCase()) {
             case "mysql" -> new MySqlMetadataExtractor(schemaFilter);
             case "h2" -> new H2MetadataExtractor(schemaFilter);
-            default -> throw new UnsupportedOperationException("Unsupported database: " + databaseProductName);
+            default -> throw new IllegalArgumentException("Unsupported database: " + databaseProductName);
         };
     }
 

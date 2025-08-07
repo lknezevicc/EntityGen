@@ -8,7 +8,17 @@ import hr.lknezevic.entitygen.model.template.modules.strategies.PrimaryKeyRender
 import hr.lknezevic.entitygen.utils.NamingUtil;
 import hr.lknezevic.entitygen.utils.TemplateUtil;
 
+/**
+ * Strategy for rendering primary keys of entities.
+ */
 public class EntityPrimaryKeyStrategy implements PrimaryKeyRenderingStrategy {
+
+    /**
+     * Renders a primary key for an entity using a predefined template.
+     *
+     * @param entity the entity whose primary key is to be rendered
+     * @return a formatted string representing the primary key in the entity
+     */
     @Override
     public String render(Entity entity) {
         String idType = TemplateUtil.getEntityIdType(entity);

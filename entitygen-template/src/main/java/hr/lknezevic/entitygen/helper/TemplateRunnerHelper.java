@@ -4,20 +4,22 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
-import hr.lknezevic.entitygen.builder.ImportFactory;
+import hr.lknezevic.entitygen.analyzer.ImportFactory;
 import hr.lknezevic.entitygen.config.UserConfig;
 import hr.lknezevic.entitygen.enums.ComponentType;
+import hr.lknezevic.entitygen.exceptions.unchecked.TemplateGenerationException;
 import hr.lknezevic.entitygen.model.template.TemplateModelFactory;
 import hr.lknezevic.entitygen.model.template.TemplateProviderObject;
 import hr.lknezevic.entitygen.model.template.common.Entity;
 import hr.lknezevic.entitygen.model.template.models.TemplateModel;
+import hr.lknezevic.entitygen.utils.LoggingUtility;
 import hr.lknezevic.entitygen.utils.TemplateUtil;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,18 +29,18 @@ import java.util.Map;
  * <p>
  * Handles template configuration, file path resolution, and component generation logic
  * based on {@link UserConfig} settings.
- *
- * @author leonknezevic
  */
-@Slf4j
 public class TemplateRunnerHelper {
     private final static String JAVA_EXTENSION = ".java";
     private final UserConfig userConfig;
     private final Configuration cfg;
-    private final JavaCodeFormatter formatter = new JavaCodeFormatter();
+    private final JavaCodeFormatter formatter;
+    private Map<String, Entity> entityByClassName;
 
     public TemplateRunnerHelper(UserConfig userConfig) {
         this.userConfig = userConfig;
+        this.formatter = new JavaCodeFormatter();
+        this.entityByClassName = new HashMap<>();
 
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_32);
         cfg.setClassLoaderForTemplateLoading(getClass().getClassLoader(), "/templates");
@@ -53,24 +55,26 @@ public class TemplateRunnerHelper {
      * Generates component types for the given entity.
      *
      * @param entity the entity to generate component for
-     * @param entityByClassName map of table name to entity for relation lookups
      */
-    public void generateComponents(Entity entity, Map<String, Entity> entityByClassName) {
+    public void generateComponents(Entity entity) {
+        List<ComponentType> generatedComponents = new ArrayList<>();
         for (ComponentType componentType : ComponentType.values()) {
 
             TemplateProviderObject tpo = new TemplateProviderObject(componentType, entity, userConfig, entityByClassName);
 
             if (componentType == ComponentType.EMBEDDABLE && !entity.isCompositeKey()) {
-                log.debug("Skipping EMBEDDABLE generation for {} - no composite key", entity.getClassName());
+                LoggingUtility.debug("Skipping EMBEDDABLE generation for {} - no composite key",
+                        entity.getClassName());
                 continue;
             }
 
             if (!TemplateUtil.shouldGenerate(componentType, userConfig)) {
-                log.info("Skipping {} generation for {}", componentType, entity.getClassName());
+                LoggingUtility.debug("Skipping {} generation for {}",
+                        componentType.name(), entity.getClassName());
                 continue;
             }
 
-            List<String> imports = ImportFactory.getAnalyzer(componentType, tpo).getImports();
+            List<String> imports = ImportFactory.getAnalyzer(tpo).getImports();
             TemplateModel template = TemplateModelFactory.createModel(tpo, imports);
 
             String filePath = template.getComponentPackagePath() + File.separator +
@@ -78,13 +82,14 @@ public class TemplateRunnerHelper {
 
             File file = new File(filePath);
 
-            if (!TemplateUtil.overwriteComponent(componentType, file, userConfig)) {
-                log.info("Skipping {} generation for {} - file already exists", componentType, entity.getClassName());
+            if (!TemplateUtil.overwriteComponent(file, userConfig)) {
+                LoggingUtility.debug("Skipping {} generation for {} - file already exists",
+                        componentType.name(), entity.getClassName());
                 continue;
             }
 
             if (file.getParentFile().mkdirs())
-                log.debug("Created {} parent directory", file.getParentFile().getAbsolutePath());
+                LoggingUtility.debug("Created parent directory for {}", file.getParentFile().getAbsolutePath());
 
             Map<String, Object> data = new HashMap<>();
             data.put("template", template);
@@ -103,12 +108,14 @@ public class TemplateRunnerHelper {
                     fileWriter.write(formattedCode);
                 }
 
-                log.info("Generated {} for {}", componentType, entity.getClassName());
+                generatedComponents.add(componentType);
             } catch (TemplateException | IOException e) {
-                log.error("Failed to generate {} for {}: {}", componentType, entity.getClassName(), e.getMessage());
-                throw new RuntimeException(e);
+                LoggingUtility.error("Failed to generate {} for {}: {}", componentType.name(), entity.getClassName(), e.getMessage());
+                throw new TemplateGenerationException(String.format("Error generating %s for %s", componentType.name(), entity.getClassName()), e);
             }
         }
+
+        LoggingUtility.info("Generated components for {}: {}", entity.getClassName(), generatedComponents);
     }
 
     private Template getTemplate(ComponentType componentType) throws IOException {
@@ -121,5 +128,14 @@ public class TemplateRunnerHelper {
             case CONTROLLER -> cfg.getTemplate("controller.ftl");
             case REPOSITORY -> cfg.getTemplate("repository.ftl");
         };
+    }
+
+    public void setEntityByClassName(List<Entity> entities) {
+        this.entityByClassName = entities.stream()
+                .collect(java.util.stream.Collectors.toMap(
+                        Entity::getClassName,
+                        e -> e,
+                        (existing, replacement) -> existing
+                ));
     }
 }

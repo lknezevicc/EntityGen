@@ -16,8 +16,6 @@ import java.util.List;
  * Represents a relation between entities in the context of a database.
  * Contains metadata about the relation such as field name, target entity class,
  * type of relation, cascade type, fetch type, and join columns.
- *
- * @author leonknezevic
  */
 @Data
 @AllArgsConstructor

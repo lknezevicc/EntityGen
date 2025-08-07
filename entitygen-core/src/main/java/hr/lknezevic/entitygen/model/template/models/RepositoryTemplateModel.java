@@ -12,8 +12,6 @@ import java.util.List;
  * Represents the model for a repository template.
  * This class extends AbstractTemplateModel and provides the body of the repository template.
  * It includes methods to retrieve the component name, entity name, and ID type.
- *
- * @author leonknezevic
  */
 @Getter
 public class RepositoryTemplateModel extends AbstractTemplateModel {
@@ -22,6 +20,11 @@ public class RepositoryTemplateModel extends AbstractTemplateModel {
         super(tpo.componentType(), tpo.entity(), tpo.userConfig(), tpo.entityByClassName(), imports);
     }
 
+    /**
+     * Returns the body for the repository Freemarker template.
+     *
+     * @return formatted string representing the repository model body
+     */
     @Override
     public String getModelBody() {
         return TemplateFactory.builder()

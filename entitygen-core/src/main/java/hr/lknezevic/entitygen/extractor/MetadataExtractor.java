@@ -8,8 +8,6 @@ import java.util.List;
 /**
  * Interface for extracting metadata from a database.
  * This interface defines methods to extract schemas, tables, columns, foreign keys, and unique constraints.
- *
- * @author leonknezevic
  */
 public interface MetadataExtractor {
     List<Schema> extractSchemas(Connection connection);

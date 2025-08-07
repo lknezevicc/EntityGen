@@ -6,8 +6,6 @@ import java.util.List;
 
 /**
  * Utility class for creating formatted strings based on a template and parameters.
- *
- * @author leonknezevic
  */
 public class TemplateFactory {
     private final String template;
@@ -21,6 +19,11 @@ public class TemplateFactory {
         return new TemplateFactoryBuilder();
     }
 
+    /**
+     * Formats the template with the provided parameters.
+     *
+     * @return a formatted string based on the template and parameters
+     */
     public String format() {
         if (params.isEmpty()) {
             return template;
@@ -29,11 +32,23 @@ public class TemplateFactory {
         return String.format(template, params.toArray());
     }
 
+    /**
+     * Adds a single parameter to the list of parameters for formatting.
+     *
+     * @param param the parameter to add
+     * @return the current instance of TemplateFactory for method chaining
+     */
     public TemplateFactory addParam(Object param) {
         params.add(param);
         return this;
     }
 
+    /**
+     * Adds multiple parameters to the list of parameters for formatting.
+     *
+     * @param newParams the parameters to add
+     * @return the current instance of TemplateFactory for method chaining
+     */
     public TemplateFactory addParams(Object... newParams) {
         Collections.addAll(params, newParams);
         return this;

@@ -5,6 +5,9 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a database schema containing a list of tables.
+ */
 @Data
 @Builder
 @ToString

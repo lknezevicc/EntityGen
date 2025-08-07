@@ -1,4 +1,4 @@
-package hr.lknezevic.entitygen.builder.imports;
+package hr.lknezevic.entitygen.analyzer.imports;
 
 import hr.lknezevic.entitygen.enums.CollectionType;
 import hr.lknezevic.entitygen.enums.ComponentType;
@@ -8,19 +8,25 @@ import hr.lknezevic.entitygen.model.template.TemplateProviderObject;
 import hr.lknezevic.entitygen.model.template.common.Field;
 import hr.lknezevic.entitygen.model.template.common.Relation;
 import hr.lknezevic.entitygen.utils.TemplateUtil;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Slf4j
+/**
+ * Analyzes and provides the necessary imports for an Entity class.
+ */
 public class EntityImportAnalyzer extends AbstractImportAnalyzer {
 
     public EntityImportAnalyzer(TemplateProviderObject tpo) {
         super(tpo.entity(), tpo.userConfig(), tpo.entityByClassName());
     }
 
+    /**
+     * Returns a list of imports required for the Entity class.
+     *
+     * @return List of import strings
+     */
     @Override
     public List<String> getImports() {
         imports.addAll(Set.of(
@@ -32,8 +38,7 @@ public class EntityImportAnalyzer extends AbstractImportAnalyzer {
                 TemplateImport.JPA_TABLE
         ));
 
-        if (hasAdditionalImports())
-            analyzeAdditionalImports();
+        analyzeAdditionalImports();
 
         return getCombinedImports();
     }
@@ -43,11 +48,6 @@ public class EntityImportAnalyzer extends AbstractImportAnalyzer {
         super.analyzeFields();
         this.analyzeFields();
         this.analyzeRelations();
-    }
-
-    @Override
-    protected boolean hasAdditionalImports() {
-        return true;
     }
 
     @Override
@@ -84,7 +84,8 @@ public class EntityImportAnalyzer extends AbstractImportAnalyzer {
     protected void analyzeRelations() {
         if (entity.getRelations().isEmpty()) return;
 
-        analyzeRelationByType();
+        imports.add(TemplateImport.JPA_FETCH_TYPE);
+        imports.add(TemplateImport.JPA_CASCADE_TYPE);
 
         entity.getRelations().forEach(relation -> {
             CollectionType collectionType = relation.getCollectionType();
@@ -106,25 +107,9 @@ public class EntityImportAnalyzer extends AbstractImportAnalyzer {
             }
         });
 
-        if (entity.getRelations().stream().anyMatch(relation -> !relation.getJoinColumns().isEmpty())) {
-            imports.add(TemplateImport.JPA_JOIN_COLUMN);
-        }
-
-        if (entity.getRelations().stream().anyMatch(relation -> relation.getJoinColumns().size() > 1)) {
-            imports.add(TemplateImport.JPA_JOIN_COLUMNS);
-        }
-    }
-
-    private void analyzeRelationByType() {
-        imports.add(TemplateImport.JPA_FETCH_TYPE);
-        imports.add(TemplateImport.JPA_CASCADE_TYPE);
-
         Set<RelationType> relationTypes = entity.getRelations().stream()
                 .map(Relation::getType)
                 .collect(Collectors.toSet());
-
-        boolean hasCollection = entity.getRelations().stream()
-                .anyMatch(relation -> relation.getCollectionType() != null);
 
         relationTypes.forEach(relationType -> {
             switch (relationType) {
@@ -140,17 +125,28 @@ public class EntityImportAnalyzer extends AbstractImportAnalyzer {
 
                 case MANY_TO_MANY -> {
                     imports.add(TemplateImport.JPA_MANY_TO_MANY);
-                    imports.add(TemplateImport.JPA_JOIN_TABLE);
-                    //imports.add(TemplateImport.JPA_INVERSE_JOIN_COLUMN);
                     imports.add(TemplateImport.JAVA_LINKED_HASH_SET);
                 }
             }
 
-            if (hasCollection && (relationType == RelationType.ONE_TO_MANY || relationType == RelationType.MANY_TO_MANY)) {
+            if (relationType == RelationType.ONE_TO_MANY || relationType == RelationType.MANY_TO_MANY) {
                 imports.add(TemplateImport.LOMBOK_TO_STRING);
                 imports.add(TemplateImport.LOMBOK_EQUALS_AND_HASH_CODE);
             }
         });
+
+        if (entity.getRelations().stream().anyMatch(relation ->
+                relation.getMappedBy() == null && relation.getType() == RelationType.MANY_TO_MANY)) {
+            imports.add(TemplateImport.JPA_JOIN_TABLE);
+        }
+
+        if (entity.getRelations().stream().anyMatch(relation -> !relation.getJoinColumns().isEmpty())) {
+            imports.add(TemplateImport.JPA_JOIN_COLUMN);
+        }
+
+        if (entity.getRelations().stream().anyMatch(relation -> relation.getJoinColumns().size() > 1)) {
+            imports.add(TemplateImport.JPA_JOIN_COLUMNS);
+        }
 
         if (entity.getRelations().stream().anyMatch(relation -> relation.getMapsId() != null))
             imports.add(TemplateImport.JPA_MAPS_ID);

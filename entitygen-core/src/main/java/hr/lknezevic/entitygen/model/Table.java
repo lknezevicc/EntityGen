@@ -5,11 +5,13 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a database table with its name, schema, catalog, columns, foreign keys, and unique constraints.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ToString
 public class Table {
     private String name;
     private String schema;
@@ -22,6 +24,11 @@ public class Table {
     @Builder.Default
     private List<UniqueConstraint> uniqueConstraints = new ArrayList<>();
 
+    /**
+     * Returns a list of column names that are primary keys in this table.
+     *
+     * @return a list of primary key column names
+     */
     public List<String> getPrimaryKeys() {
         return columns.stream().filter(Column::isPrimaryKey).map(Column::getName).toList();
     }

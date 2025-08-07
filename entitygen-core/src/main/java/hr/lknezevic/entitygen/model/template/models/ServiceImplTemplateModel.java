@@ -11,8 +11,6 @@ import java.util.List;
  * Represents the model for a service implementation template.
  * This class extends AbstractTemplateModel and provides the body of the service implementation template.
  * It includes methods to retrieve primary keys, non-primary fields, and relation fields.
- *
- * @author leonknezevic
  */
 @Getter
 public class ServiceImplTemplateModel extends AbstractTemplateModel {
@@ -21,6 +19,11 @@ public class ServiceImplTemplateModel extends AbstractTemplateModel {
         super(tpo.componentType(), tpo.entity(), tpo.userConfig(), tpo.entityByClassName(), imports);
     }
 
+    /**
+     * Returns the body for the service implementation Freemarker template.
+     *
+     * @return formatted string representing the service implementation model body
+     */
     @Override
     public String getModelBody() {
         return TemplateUtil.joinParams(TemplateConst.COMMA_JOIN_NEWLINE,

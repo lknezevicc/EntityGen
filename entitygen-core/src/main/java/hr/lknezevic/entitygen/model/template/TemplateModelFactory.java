@@ -6,13 +6,17 @@ import java.util.List;
 
 /**
  * Factory class for creating instances of template models based on the provided TemplateProviderObject.
- *
- * @author leonknezevic
  */
 public class TemplateModelFactory {
 
-    public static AbstractTemplateModel createModel(TemplateProviderObject tpo, List<String> imports) {
-
+    /**
+     * Creates an instance of TemplateModel based on the provided TemplateProviderObject and imports.
+     *
+     * @param tpo the TemplateProviderObject
+     * @param imports a list of import statements to be included in the template model
+     * @return an instance of TemplateModel
+     */
+    public static TemplateModel createModel(TemplateProviderObject tpo, List<String> imports) {
         return switch (tpo.componentType()) {
             case ENTITY -> new EntityTemplateModel(tpo, imports);
             case DTO -> new DtoTemplateModel(tpo, imports);

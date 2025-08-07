@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+/**
+ * Represents a unique constraint in a database table.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

@@ -8,8 +8,6 @@ import java.util.List;
 /**
  * Represents an embedded ID in an entity.
  * Contains the class name and a list of fields that make up the embedded ID.
- *
- * @author leonknezevic
  */
 @Data
 @Builder

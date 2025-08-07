@@ -1,4 +1,4 @@
-package hr.lknezevic.entitygen.builder.imports;
+package hr.lknezevic.entitygen.analyzer.imports;
 
 import hr.lknezevic.entitygen.config.UserConfig;
 import hr.lknezevic.entitygen.enums.TemplateImport;
@@ -8,6 +8,10 @@ import lombok.RequiredArgsConstructor;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Abstract class for analyzing and collecting imports for an entity.
+ * It provides methods to analyze fields, relations, and additional imports.
+ */
 @RequiredArgsConstructor
 public abstract class AbstractImportAnalyzer implements ImportAnalyzer {
     protected final Set<TemplateImport> imports = new HashSet<>();
@@ -25,10 +29,6 @@ public abstract class AbstractImportAnalyzer implements ImportAnalyzer {
         combinedImports.addAll(sortOtherImports());
 
         return combinedImports;
-    }
-
-    protected boolean hasAdditionalImports() {
-        return false;
     }
 
     protected void analyzeFields() {
@@ -53,6 +53,18 @@ public abstract class AbstractImportAnalyzer implements ImportAnalyzer {
                 }
             }
         });
+    }
+
+    protected TemplateImport findImportForJavaType(String javaType) {
+        return switch (javaType) {
+            case "BigDecimal" -> TemplateImport.JAVA_BIG_DECIMAL;
+            case "BigInteger" -> TemplateImport.JAVA_BIG_INTEGER;
+            case "Date" -> TemplateImport.JAVA_DATE;
+            case "LocalDate" -> TemplateImport.JAVA_LOCAL_DATE;
+            case "LocalTime" -> TemplateImport.JAVA_LOCAL_TIME;
+            case "LocalDateTime" -> TemplateImport.JAVA_LOCAL_DATE_TIME;
+            default -> null;
+        };
     }
 
     private List<String> sortImports() {
@@ -87,18 +99,6 @@ public abstract class AbstractImportAnalyzer implements ImportAnalyzer {
     private List<String> sortOtherImports() {
         if (otherImports.isEmpty()) return new ArrayList<>();
         return otherImports.stream().sorted(String::compareTo).toList();
-    }
-
-    TemplateImport findImportForJavaType(String javaType) {
-        return switch (javaType) {
-            case "BigDecimal" -> TemplateImport.JAVA_BIG_DECIMAL;
-            case "BigInteger" -> TemplateImport.JAVA_BIG_INTEGER;
-            case "Date" -> TemplateImport.JAVA_DATE;
-            case "LocalDate" -> TemplateImport.JAVA_LOCAL_DATE;
-            case "LocalTime" -> TemplateImport.JAVA_LOCAL_TIME;
-            case "LocalDateTime" -> TemplateImport.JAVA_LOCAL_DATE_TIME;
-            default -> null;
-        };
     }
 
 }

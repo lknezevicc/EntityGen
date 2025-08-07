@@ -8,8 +8,6 @@ import java.util.stream.Collectors;
 
 /**
  * Utility class for detecting and analyzing relationships between database entities.
- *
- * @author leonknezevic
  */
 public class RelationDetector {
     
