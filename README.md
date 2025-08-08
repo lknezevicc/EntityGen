@@ -57,7 +57,7 @@ EntityGen is organized into **three main modules**:
 ## 📋 Requirements & Setup
 
 ### Prerequisites
-- Java 17+
+- Java 21+
 - Maven 3.6+
 - MySQL 8.0+ (currently supported database)
 - Spring Boot 3.x project
