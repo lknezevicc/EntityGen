@@ -15,6 +15,7 @@ ${imp}
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/${template.entity.tableName?lower_case?replace("_", "-")}")
+@Generated(value="EntityGen Generator", date="${date}")
 public class ${template.controllerName} {
 
     private final ${template.serviceName} service;

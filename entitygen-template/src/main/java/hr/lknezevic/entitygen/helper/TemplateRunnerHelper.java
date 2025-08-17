@@ -92,6 +92,7 @@ public class TemplateRunnerHelper {
                 LoggingUtility.debug("Created parent directory for {}", file.getParentFile().getAbsolutePath());
 
             Map<String, Object> data = new HashMap<>();
+            data.put("date", TemplateUtil.getCurrentDate());
             data.put("template", template);
 
             try (StringWriter stringWriter = new StringWriter()) {

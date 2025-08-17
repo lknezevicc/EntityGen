@@ -7,7 +7,7 @@ import lombok.Getter;
  * The order determines the priority of imports when generating code.
  */
 @Getter
-public enum TemplateImport {
+public enum Imports {
     // Java SE - Core Types (order 1)
     JAVA_INTEGER(1, "java.lang.Integer"),
     JAVA_LONG(1, "java.lang.Long"),
@@ -101,6 +101,9 @@ public enum TemplateImport {
     JAVA_SQL_TIMESTAMP(1, "java.sql.Timestamp"),
     JAVA_SQL_BLOB(1, "java.sql.Blob"),
     JAVA_SQL_CLOB(1, "java.sql.Clob"),
+
+    // Java SE - Annotations (order 1)
+    JAVA_GENERATED(1, "javax.annotation.processing.Generated"),
     
     // Jakarta EE - JPA Core (order 2)
     JPA_ENTITY(2, "jakarta.persistence.Entity"),
@@ -340,7 +343,7 @@ public enum TemplateImport {
     private final int order;
     private final String value;
 
-    TemplateImport(int order, String value) {
+    Imports(int order, String value) {
         this.order = order;
         this.value = value;
     }

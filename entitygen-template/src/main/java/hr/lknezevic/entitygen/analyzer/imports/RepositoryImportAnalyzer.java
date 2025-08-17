@@ -1,7 +1,7 @@
 package hr.lknezevic.entitygen.analyzer.imports;
 
 import hr.lknezevic.entitygen.enums.ComponentType;
-import hr.lknezevic.entitygen.enums.TemplateImport;
+import hr.lknezevic.entitygen.enums.Imports;
 import hr.lknezevic.entitygen.model.template.TemplateProviderObject;
 import hr.lknezevic.entitygen.utils.TemplateUtil;
 
@@ -25,8 +25,9 @@ public class RepositoryImportAnalyzer extends AbstractImportAnalyzer {
     @Override
     public List<String> getImports() {
         imports.addAll(Set.of(
-                TemplateImport.SPRING_REPOSITORY,
-                TemplateImport.SPRING_JPA_REPOSITORY
+                Imports.JAVA_GENERATED,
+                Imports.SPRING_REPOSITORY,
+                Imports.SPRING_JPA_REPOSITORY
         ));
 
         analyzeAdditionalImports();

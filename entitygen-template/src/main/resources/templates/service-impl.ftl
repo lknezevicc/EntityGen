@@ -13,6 +13,7 @@ ${imp}
  */
 @Service
 @RequiredArgsConstructor
+@Generated(value="EntityGen Generator", date="${date}")
 public class ${template.serviceImplName} implements ${template.serviceName} {
 
     private final ${template.repositoryName} repository;

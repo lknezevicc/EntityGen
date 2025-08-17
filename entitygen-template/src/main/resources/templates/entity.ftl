@@ -25,6 +25,7 @@ ${imp}
 </#list>
     }</#if>
 )
+@Generated(value="EntityGen Generator", date="${date}")
 public class ${template.entityName} {
 
     ${template.modelBody}

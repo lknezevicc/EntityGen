@@ -1,7 +1,7 @@
 package hr.lknezevic.entitygen.analyzer.imports;
 
 import hr.lknezevic.entitygen.enums.ComponentType;
-import hr.lknezevic.entitygen.enums.TemplateImport;
+import hr.lknezevic.entitygen.enums.Imports;
 import hr.lknezevic.entitygen.model.template.TemplateProviderObject;
 import hr.lknezevic.entitygen.utils.TemplateUtil;
 
@@ -25,12 +25,13 @@ public class ControllerImportAnalyzer extends AbstractImportAnalyzer {
     @Override
     public List<String> getImports() {
         imports.addAll(Set.of(
-                TemplateImport.SPRING_REST_CONTROLLER,
-                TemplateImport.SPRING_REQUEST_MAPPING,
-                TemplateImport.SPRING_GET_MAPPING,
-                TemplateImport.LOMBOK_REQUIRED_ARGS_CONSTRUCTOR,
-                TemplateImport.JAVA_LIST,
-                TemplateImport.SPRING_RESPONSE_ENTITY
+                Imports.JAVA_GENERATED,
+                Imports.SPRING_REST_CONTROLLER,
+                Imports.SPRING_REQUEST_MAPPING,
+                Imports.SPRING_GET_MAPPING,
+                Imports.LOMBOK_REQUIRED_ARGS_CONSTRUCTOR,
+                Imports.JAVA_LIST,
+                Imports.SPRING_RESPONSE_ENTITY
         ));
 
         analyzeAdditionalImports();

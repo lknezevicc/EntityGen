@@ -12,5 +12,6 @@ ${imp}
  * @author ${template.userConfig.javadocAuthor}
  */
 @Repository
+@Generated(value="EntityGen Generator", date="${date}")
 public interface ${template.modelBody} {
 }

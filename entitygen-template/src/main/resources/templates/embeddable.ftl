@@ -16,6 +16,7 @@ ${imp}
 @AllArgsConstructor
 @Builder
 @Embeddable
+@Generated(value="EntityGen Generator", date="${date}")
 public class ${template.embeddedIdName} implements Serializable {
 
     @Serial

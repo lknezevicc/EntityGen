@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -417,6 +418,15 @@ public class TemplateUtil {
 
         String formatted = String.join(", ", params);
         return formatted.isEmpty() ? "" : "(" + formatted + ")";
+    }
+
+    /**
+     * Gets the current date and time as a string.
+     *
+     * @return the current date and time in ISO-8601 format
+     */
+    public static String getCurrentDate() {
+        return LocalDateTime.now().toString();
     }
 
     private static String resolvePath(String componentPackage, UserConfig userConfig) {

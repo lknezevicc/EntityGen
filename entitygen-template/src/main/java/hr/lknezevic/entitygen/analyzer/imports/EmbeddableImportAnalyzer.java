@@ -1,6 +1,6 @@
 package hr.lknezevic.entitygen.analyzer.imports;
 
-import hr.lknezevic.entitygen.enums.TemplateImport;
+import hr.lknezevic.entitygen.enums.Imports;
 import hr.lknezevic.entitygen.model.template.TemplateProviderObject;
 
 import java.util.List;
@@ -23,14 +23,15 @@ public class EmbeddableImportAnalyzer extends AbstractImportAnalyzer {
     @Override
     public List<String> getImports() {
         imports.addAll(Set.of(
-                TemplateImport.LOMBOK_DATA,
-                TemplateImport.LOMBOK_NO_ARGS_CONSTRUCTOR,
-                TemplateImport.LOMBOK_ALL_ARGS_CONSTRUCTOR,
-                TemplateImport.LOMBOK_BUILDER,
-                TemplateImport.JPA_EMBEDDABLE,
-                TemplateImport.JPA_COLUMN,
-                TemplateImport.JAVA_SERIALIZABLE,
-                TemplateImport.JAVA_SERIAL
+                Imports.JAVA_GENERATED,
+                Imports.LOMBOK_DATA,
+                Imports.LOMBOK_NO_ARGS_CONSTRUCTOR,
+                Imports.LOMBOK_ALL_ARGS_CONSTRUCTOR,
+                Imports.LOMBOK_BUILDER,
+                Imports.JPA_EMBEDDABLE,
+                Imports.JPA_COLUMN,
+                Imports.JAVA_SERIALIZABLE,
+                Imports.JAVA_SERIAL
         ));
 
         analyzeAdditionalImports();
@@ -47,10 +48,10 @@ public class EmbeddableImportAnalyzer extends AbstractImportAnalyzer {
     protected void analyzeFields() {
         if (entity.getFields().isEmpty()) return;
 
-        imports.add(TemplateImport.JPA_COLUMN);
+        imports.add(Imports.JPA_COLUMN);
 
         entity.getPrimaryKeyFields().forEach(field -> {
-            TemplateImport typeImport = findImportForJavaType(field.getJavaType());
+            Imports typeImport = findImportForJavaType(field.getJavaType());
             if (typeImport != null) {
                 imports.add(typeImport);
             }

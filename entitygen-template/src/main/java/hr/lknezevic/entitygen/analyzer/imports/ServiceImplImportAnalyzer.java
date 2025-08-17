@@ -2,7 +2,7 @@ package hr.lknezevic.entitygen.analyzer.imports;
 
 import hr.lknezevic.entitygen.enums.ComponentType;
 import hr.lknezevic.entitygen.enums.RelationType;
-import hr.lknezevic.entitygen.enums.TemplateImport;
+import hr.lknezevic.entitygen.enums.Imports;
 import hr.lknezevic.entitygen.model.template.TemplateProviderObject;
 import hr.lknezevic.entitygen.utils.TemplateUtil;
 
@@ -26,9 +26,10 @@ public class ServiceImplImportAnalyzer extends AbstractImportAnalyzer {
     @Override
     public List<String> getImports() {
         imports.addAll(Set.of(
-                TemplateImport.SPRING_SERVICE,
-                TemplateImport.LOMBOK_REQUIRED_ARGS_CONSTRUCTOR,
-                TemplateImport.JAVA_LIST
+                Imports.JAVA_GENERATED,
+                Imports.SPRING_SERVICE,
+                Imports.LOMBOK_REQUIRED_ARGS_CONSTRUCTOR,
+                Imports.JAVA_LIST
         ));
 
         analyzeAdditionalImports();
@@ -54,8 +55,8 @@ public class ServiceImplImportAnalyzer extends AbstractImportAnalyzer {
             RelationType relationType = relation.getType();
             return relationType == RelationType.ONE_TO_MANY || relationType == RelationType.MANY_TO_MANY;
         })) {
-            imports.add(TemplateImport.JAVA_COLLECTORS);
-            imports.add(TemplateImport.JAVA_ARRAY_LIST);
+            imports.add(Imports.JAVA_COLLECTORS);
+            imports.add(Imports.JAVA_ARRAY_LIST);
         }
     }
 }

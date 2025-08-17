@@ -12,6 +12,7 @@ ${imp}
  *
  * @author ${template.userConfig.javadocAuthor}
  */
+@Generated(value="EntityGen Generator", date="${date}")
 public record ${template.dtoName}(
     ${template.modelBody}
 ) {}

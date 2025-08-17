@@ -1,7 +1,7 @@
 package hr.lknezevic.entitygen.analyzer.imports;
 
 import hr.lknezevic.entitygen.config.UserConfig;
-import hr.lknezevic.entitygen.enums.TemplateImport;
+import hr.lknezevic.entitygen.enums.Imports;
 import hr.lknezevic.entitygen.model.template.common.Entity;
 import lombok.RequiredArgsConstructor;
 
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 public abstract class AbstractImportAnalyzer implements ImportAnalyzer {
-    protected final Set<TemplateImport> imports = new HashSet<>();
+    protected final Set<Imports> imports = new HashSet<>();
     protected final Set<String> otherImports = new HashSet<>();
     protected final Entity entity;
     protected final UserConfig userConfig;
@@ -35,7 +35,7 @@ public abstract class AbstractImportAnalyzer implements ImportAnalyzer {
         if (entity.getFields().isEmpty()) return;
 
         entity.getFields().forEach(field -> {
-            TemplateImport typeImport = findImportForJavaType(field.getJavaType());
+            Imports typeImport = findImportForJavaType(field.getJavaType());
             if (typeImport != null) {
                 imports.add(typeImport);
             }
@@ -48,21 +48,21 @@ public abstract class AbstractImportAnalyzer implements ImportAnalyzer {
         entity.getRelations().forEach(relation -> {
             if (relation.getCollectionType() != null) {
                 switch (relation.getCollectionType()) {
-                    case LIST -> imports.add(TemplateImport.JAVA_LIST);
-                    case SET -> imports.add(TemplateImport.JAVA_SET);
+                    case LIST -> imports.add(Imports.JAVA_LIST);
+                    case SET -> imports.add(Imports.JAVA_SET);
                 }
             }
         });
     }
 
-    protected TemplateImport findImportForJavaType(String javaType) {
+    protected Imports findImportForJavaType(String javaType) {
         return switch (javaType) {
-            case "BigDecimal" -> TemplateImport.JAVA_BIG_DECIMAL;
-            case "BigInteger" -> TemplateImport.JAVA_BIG_INTEGER;
-            case "Date" -> TemplateImport.JAVA_DATE;
-            case "LocalDate" -> TemplateImport.JAVA_LOCAL_DATE;
-            case "LocalTime" -> TemplateImport.JAVA_LOCAL_TIME;
-            case "LocalDateTime" -> TemplateImport.JAVA_LOCAL_DATE_TIME;
+            case "BigDecimal" -> Imports.JAVA_BIG_DECIMAL;
+            case "BigInteger" -> Imports.JAVA_BIG_INTEGER;
+            case "Date" -> Imports.JAVA_DATE;
+            case "LocalDate" -> Imports.JAVA_LOCAL_DATE;
+            case "LocalTime" -> Imports.JAVA_LOCAL_TIME;
+            case "LocalDateTime" -> Imports.JAVA_LOCAL_DATE_TIME;
             default -> null;
         };
     }
@@ -70,9 +70,9 @@ public abstract class AbstractImportAnalyzer implements ImportAnalyzer {
     private List<String> sortImports() {
         if (imports.isEmpty()) return new ArrayList<>();
 
-        Map<Integer, List<TemplateImport>> map = imports.stream()
+        Map<Integer, List<Imports>> map = imports.stream()
                 .collect(Collectors.groupingBy(
-                        TemplateImport::getOrder,
+                        Imports::getOrder,
                         TreeMap::new,
                         Collectors.toList()
                 ));
@@ -81,11 +81,11 @@ public abstract class AbstractImportAnalyzer implements ImportAnalyzer {
         List<Integer> keys = new ArrayList<>(map.keySet());
 
         for (Integer orderKey : keys) {
-            List<TemplateImport> group = map.get(orderKey);
+            List<Imports> group = map.get(orderKey);
 
             List<String> sorted = group.stream()
-                    .sorted(Comparator.comparing(TemplateImport::getValue))
-                    .map(TemplateImport::getValue)
+                    .sorted(Comparator.comparing(Imports::getValue))
+                    .map(Imports::getValue)
                     .toList();
 
             result.addAll(sorted);
