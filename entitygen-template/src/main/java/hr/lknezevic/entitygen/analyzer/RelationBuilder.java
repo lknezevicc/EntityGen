@@ -5,7 +5,7 @@ import hr.lknezevic.entitygen.analyzer.relation.ManyToManyRelationAnalyzer;
 import hr.lknezevic.entitygen.analyzer.relation.ParentToChildRelationAnalyzer;
 import hr.lknezevic.entitygen.model.RelationContext;
 import hr.lknezevic.entitygen.model.Table;
-import hr.lknezevic.entitygen.model.template.common.Relation;
+import hr.lknezevic.entitygen.model.domain.Relation;
 import hr.lknezevic.entitygen.utils.LoggingUtility;
 import lombok.Data;
 

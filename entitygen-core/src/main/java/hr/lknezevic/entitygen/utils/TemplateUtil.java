@@ -2,11 +2,11 @@ package hr.lknezevic.entitygen.utils;
 
 import hr.lknezevic.entitygen.config.UserConfig;
 import hr.lknezevic.entitygen.enums.ComponentType;
-import hr.lknezevic.entitygen.model.template.TemplateConst;
-import hr.lknezevic.entitygen.model.template.TemplateFactory;
-import hr.lknezevic.entitygen.model.template.common.Entity;
-import hr.lknezevic.entitygen.model.template.common.Field;
-import hr.lknezevic.entitygen.model.template.common.Relation;
+import hr.lknezevic.entitygen.template.TemplateConst;
+import hr.lknezevic.entitygen.template.TemplateFactory;
+import hr.lknezevic.entitygen.model.domain.Entity;
+import hr.lknezevic.entitygen.model.domain.Field;
+import hr.lknezevic.entitygen.model.domain.Relation;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;

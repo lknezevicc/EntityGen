@@ -1,6 +1,6 @@
 package hr.lknezevic.entitygen.model;
 
-import hr.lknezevic.entitygen.model.template.common.Entity;
+import hr.lknezevic.entitygen.model.domain.Entity;
 import lombok.Data;
 
 import java.util.List;

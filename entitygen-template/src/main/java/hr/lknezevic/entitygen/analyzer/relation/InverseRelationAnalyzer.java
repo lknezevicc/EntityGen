@@ -5,7 +5,7 @@ import hr.lknezevic.entitygen.enums.RelationType;
 import hr.lknezevic.entitygen.helper.relation.RelationDetector;
 import hr.lknezevic.entitygen.model.ForeignKey;
 import hr.lknezevic.entitygen.model.Table;
-import hr.lknezevic.entitygen.model.template.common.Relation;
+import hr.lknezevic.entitygen.model.domain.Relation;
 import hr.lknezevic.entitygen.utils.LoggingUtility;
 import hr.lknezevic.entitygen.utils.NamingUtil;
 

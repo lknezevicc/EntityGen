@@ -4,9 +4,9 @@ import hr.lknezevic.entitygen.enums.CollectionType;
 import hr.lknezevic.entitygen.enums.ComponentType;
 import hr.lknezevic.entitygen.enums.RelationType;
 import hr.lknezevic.entitygen.enums.Imports;
-import hr.lknezevic.entitygen.model.template.TemplateProviderObject;
-import hr.lknezevic.entitygen.model.template.common.Field;
-import hr.lknezevic.entitygen.model.template.common.Relation;
+import hr.lknezevic.entitygen.template.TemplateProviderObject;
+import hr.lknezevic.entitygen.model.domain.Field;
+import hr.lknezevic.entitygen.model.domain.Relation;
 import hr.lknezevic.entitygen.utils.TemplateUtil;
 
 import java.util.List;

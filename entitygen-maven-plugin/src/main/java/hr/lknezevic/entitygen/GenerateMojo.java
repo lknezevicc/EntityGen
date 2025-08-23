@@ -45,8 +45,8 @@ public class GenerateMojo extends AbstractMojo {
             getLog().warn(String.format("Failed to load properties from %s, using default properties", springConfigPath), e);
         }
 
-        EntityGenRunner entityGenRunner = new EntityGenRunner(userConfig, springConfigPath, activeProfile);
-        List<Schema> schemas = entityGenRunner.generate();
+        MetadataRunner metadataRunner = new MetadataRunner(userConfig, springConfigPath, activeProfile);
+        List<Schema> schemas = metadataRunner.generate();
 
         if (schemas.isEmpty()) {
             getLog().warn("No schemas found. Please check your configuration.");

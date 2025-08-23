@@ -2,7 +2,7 @@ package hr.lknezevic.entitygen.analyzer.imports;
 
 import hr.lknezevic.entitygen.config.UserConfig;
 import hr.lknezevic.entitygen.enums.Imports;
-import hr.lknezevic.entitygen.model.template.common.Entity;
+import hr.lknezevic.entitygen.model.domain.Entity;
 import lombok.RequiredArgsConstructor;
 
 import java.util.*;

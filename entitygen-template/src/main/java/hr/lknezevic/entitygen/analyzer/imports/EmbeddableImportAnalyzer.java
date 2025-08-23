@@ -1,7 +1,7 @@
 package hr.lknezevic.entitygen.analyzer.imports;
 
 import hr.lknezevic.entitygen.enums.Imports;
-import hr.lknezevic.entitygen.model.template.TemplateProviderObject;
+import hr.lknezevic.entitygen.template.TemplateProviderObject;
 
 import java.util.List;
 import java.util.Set;

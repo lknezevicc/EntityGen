@@ -1,8 +1,8 @@
 package hr.lknezevic.entitygen.utils;
 
-import hr.lknezevic.entitygen.model.template.TemplateFactory;
-import hr.lknezevic.entitygen.model.template.TemplateConst;
-import hr.lknezevic.entitygen.model.template.common.Relation;
+import hr.lknezevic.entitygen.template.TemplateFactory;
+import hr.lknezevic.entitygen.template.TemplateConst;
+import hr.lknezevic.entitygen.model.domain.Relation;
 
 import java.util.ArrayList;
 import java.util.List;

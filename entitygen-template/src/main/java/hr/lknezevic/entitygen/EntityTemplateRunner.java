@@ -7,8 +7,8 @@ import hr.lknezevic.entitygen.mapper.DefaultEntityModelMapper;
 import hr.lknezevic.entitygen.mapper.EntityModelMapper;
 import hr.lknezevic.entitygen.model.RelationContext;
 import hr.lknezevic.entitygen.model.Table;
-import hr.lknezevic.entitygen.model.template.common.Entity;
-import hr.lknezevic.entitygen.model.template.common.Relation;
+import hr.lknezevic.entitygen.model.domain.Entity;
+import hr.lknezevic.entitygen.model.domain.Relation;
 
 import java.util.List;
 

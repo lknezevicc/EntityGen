@@ -4,9 +4,9 @@ import hr.lknezevic.entitygen.config.UserConfig;
 import hr.lknezevic.entitygen.model.Column;
 import hr.lknezevic.entitygen.model.ForeignKey;
 import hr.lknezevic.entitygen.model.Table;
-import hr.lknezevic.entitygen.model.template.common.EmbeddedId;
-import hr.lknezevic.entitygen.model.template.common.Entity;
-import hr.lknezevic.entitygen.model.template.common.Field;
+import hr.lknezevic.entitygen.model.domain.EmbeddedId;
+import hr.lknezevic.entitygen.model.domain.Entity;
+import hr.lknezevic.entitygen.model.domain.Field;
 import hr.lknezevic.entitygen.utils.NamingUtil;
 import lombok.RequiredArgsConstructor;
 

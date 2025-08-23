@@ -1,6 +1,6 @@
 package hr.lknezevic.entitygen.analyzer.relation;
 
-import hr.lknezevic.entitygen.model.template.common.Relation;
+import hr.lknezevic.entitygen.model.domain.Relation;
 
 import java.util.List;
 

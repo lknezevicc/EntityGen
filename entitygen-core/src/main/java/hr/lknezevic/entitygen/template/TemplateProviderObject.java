@@ -1,0 +1,18 @@
+package hr.lknezevic.entitygen.template;
+
+import hr.lknezevic.entitygen.config.UserConfig;
+import hr.lknezevic.entitygen.enums.ComponentType;
+import hr.lknezevic.entitygen.model.domain.Entity;
+
+import java.util.Map;
+
+/**
+ * Represents an object that provides context for template generation.
+ * It includes the component type, entity, user configuration, and a map of entities by class name.
+ */
+public record TemplateProviderObject(
+        ComponentType componentType,
+        Entity entity,
+        UserConfig userConfig,
+        Map<String, Entity> entityByClassName
+) { }

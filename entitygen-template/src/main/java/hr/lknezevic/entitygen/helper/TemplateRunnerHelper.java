@@ -8,10 +8,10 @@ import hr.lknezevic.entitygen.analyzer.ImportFactory;
 import hr.lknezevic.entitygen.config.UserConfig;
 import hr.lknezevic.entitygen.enums.ComponentType;
 import hr.lknezevic.entitygen.exceptions.unchecked.TemplateGenerationException;
-import hr.lknezevic.entitygen.model.template.TemplateModelFactory;
-import hr.lknezevic.entitygen.model.template.TemplateProviderObject;
-import hr.lknezevic.entitygen.model.template.common.Entity;
-import hr.lknezevic.entitygen.model.template.models.TemplateModel;
+import hr.lknezevic.entitygen.template.TemplateModelFactory;
+import hr.lknezevic.entitygen.template.TemplateProviderObject;
+import hr.lknezevic.entitygen.model.domain.Entity;
+import hr.lknezevic.entitygen.template.models.TemplateModel;
 import hr.lknezevic.entitygen.utils.LoggingUtility;
 import hr.lknezevic.entitygen.utils.TemplateUtil;
 

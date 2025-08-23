@@ -1,7 +1,7 @@
 package hr.lknezevic.entitygen.analyzer;
 
 import hr.lknezevic.entitygen.analyzer.imports.*;
-import hr.lknezevic.entitygen.model.template.TemplateProviderObject;
+import hr.lknezevic.entitygen.template.TemplateProviderObject;
 
 /**
  * Factory class for creating instances of ImportAnalyzer based on the component type.
