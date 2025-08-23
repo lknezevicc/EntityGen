@@ -1,6 +1,4 @@
 package hr.lknezevic.entitygen.template;
-
-import hr.lknezevic.entitygen.model.template.models.*;
 import hr.lknezevic.entitygen.template.models.*;
 
 import java.util.List;
