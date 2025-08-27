@@ -11,6 +11,10 @@ import hr.lknezevic.entitygen.rendering.strategies.field.ServiceImplFieldStrateg
  */
 public class FieldRenderingFactory {
 
+    private FieldRenderingFactory() {
+        // Private constructor to prevent instantiation
+    }
+
     /**
      * Creates a field rendering strategy based on the provided component type.
      *

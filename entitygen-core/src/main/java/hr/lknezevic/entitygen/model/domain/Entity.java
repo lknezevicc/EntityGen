@@ -46,6 +46,7 @@ public class Entity {
      * @return a list of non-primary key field names
      */
     public List<Field> getNonPrimaryKeyFields() {
-        return fields.stream().filter(field -> !field.isPrimaryKey()).toList();
+        return fields.stream()
+                .filter(field -> !field.isPrimaryKey()).toList();
     }
 }

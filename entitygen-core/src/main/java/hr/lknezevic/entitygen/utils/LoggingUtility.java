@@ -9,6 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LoggingUtility {
 
+    private LoggingUtility() {
+        // Private constructor to prevent instantiation
+    }
+
     public static void debug(String message) {
         log.debug(message);
     }

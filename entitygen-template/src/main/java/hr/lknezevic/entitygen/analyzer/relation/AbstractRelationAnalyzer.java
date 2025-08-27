@@ -6,7 +6,6 @@ import hr.lknezevic.entitygen.enums.CollectionType;
 import hr.lknezevic.entitygen.enums.FetchType;
 import hr.lknezevic.entitygen.enums.RelationType;
 import hr.lknezevic.entitygen.helper.relation.RelationConfigHelper;
-import hr.lknezevic.entitygen.model.RelationContext;
 import hr.lknezevic.entitygen.model.ForeignKey;
 import hr.lknezevic.entitygen.model.Table;
 

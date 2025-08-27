@@ -8,6 +8,10 @@ import hr.lknezevic.entitygen.enums.CollectionType;
  */
 public class TemplateConst {
 
+    private TemplateConst() {
+        // Private constructor to prevent instantiation
+    }
+
     public static final String NEW_LINE = " \n";
     public static final String COMMA_JOIN = ", ";
     public static final String COMMA_JOIN_NEWLINE = ", \n";

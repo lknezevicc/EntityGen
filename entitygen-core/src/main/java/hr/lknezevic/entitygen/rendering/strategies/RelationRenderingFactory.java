@@ -10,6 +10,10 @@ import hr.lknezevic.entitygen.rendering.strategies.relation.ServiceImplRelationR
  */
 public class RelationRenderingFactory {
 
+    private RelationRenderingFactory() {
+        // Private constructor to prevent instantiation
+    }
+
     /**
      * Creates a relation rendering strategy based on the provided component type.
      *

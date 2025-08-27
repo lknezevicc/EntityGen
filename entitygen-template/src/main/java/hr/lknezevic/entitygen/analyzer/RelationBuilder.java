@@ -3,7 +3,7 @@ package hr.lknezevic.entitygen.analyzer;
 import hr.lknezevic.entitygen.analyzer.relation.InverseRelationAnalyzer;
 import hr.lknezevic.entitygen.analyzer.relation.ManyToManyRelationAnalyzer;
 import hr.lknezevic.entitygen.analyzer.relation.ParentToChildRelationAnalyzer;
-import hr.lknezevic.entitygen.model.RelationContext;
+import hr.lknezevic.entitygen.analyzer.relation.RelationContext;
 import hr.lknezevic.entitygen.model.Table;
 import hr.lknezevic.entitygen.model.domain.Relation;
 import hr.lknezevic.entitygen.utils.LoggingUtility;

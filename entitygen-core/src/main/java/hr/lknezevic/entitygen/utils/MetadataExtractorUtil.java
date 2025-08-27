@@ -9,6 +9,10 @@ import java.sql.Types;
  */
 public class MetadataExtractorUtil {
 
+    private MetadataExtractorUtil() {
+        // Private constructor to prevent instantiation
+    }
+
     /**
      * Resolves the Java type corresponding to an SQL data type.
      *

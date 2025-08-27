@@ -10,6 +10,10 @@ import hr.lknezevic.entitygen.rendering.strategies.pk.ServiceImplPrimaryKeyStrat
  */
 public class PrimaryKeyRenderingFactory {
 
+    private PrimaryKeyRenderingFactory() {
+        // Private constructor to prevent instantiation
+    }
+
     /**
      * Creates a primary key rendering strategy based on the provided component type.
      *

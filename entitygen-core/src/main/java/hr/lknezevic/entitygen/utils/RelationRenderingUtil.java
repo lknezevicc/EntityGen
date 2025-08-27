@@ -12,6 +12,10 @@ import java.util.List;
  */
 public class RelationRenderingUtil {
 
+    private RelationRenderingUtil() {
+        // Private constructor to prevent instantiation
+    }
+
     /**
      * Builds a string of parameters for a many-to-one relationship.
      *

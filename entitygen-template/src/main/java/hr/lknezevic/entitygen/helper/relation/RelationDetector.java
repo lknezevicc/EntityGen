@@ -10,6 +10,10 @@ import java.util.stream.Collectors;
  * Utility class for detecting and analyzing relationships between database entities.
  */
 public class RelationDetector {
+
+    private RelationDetector() {
+        // Private constructor to prevent instantiation
+    }
     
     /**
      * Determines if a foreign key represents a ONE_TO_ONE relationship.

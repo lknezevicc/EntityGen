@@ -13,7 +13,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import java.util.List;
 
 /**
-  Maven Mojo for generating entity classes based on the provided configuration.
+ * Maven Mojo for generating entity classes based on the provided configuration.
  * This Mojo reads the configuration from a properties file and generates entities accordingly.
  */
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.GENERATE_SOURCES)

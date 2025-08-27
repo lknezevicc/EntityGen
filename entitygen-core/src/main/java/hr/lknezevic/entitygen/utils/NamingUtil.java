@@ -10,6 +10,10 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class NamingUtil {
 
+    private NamingUtil() {
+        // Private constructor to prevent instantiation
+    }
+
     /**
      * Converts a given string to PascalCase.
      *

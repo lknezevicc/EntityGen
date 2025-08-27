@@ -14,6 +14,10 @@ import java.util.List;
  */
 public class RelationConfigHelper {
 
+    private RelationConfigHelper() {
+        // Private constructor to prevent instantiation
+    }
+
     /**
      * Returns the default fetch type for relations.
      *

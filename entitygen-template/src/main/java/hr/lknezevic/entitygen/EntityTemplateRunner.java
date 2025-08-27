@@ -5,7 +5,7 @@ import hr.lknezevic.entitygen.config.UserConfig;
 import hr.lknezevic.entitygen.helper.TemplateRunnerHelper;
 import hr.lknezevic.entitygen.mapper.DefaultEntityModelMapper;
 import hr.lknezevic.entitygen.mapper.EntityModelMapper;
-import hr.lknezevic.entitygen.model.RelationContext;
+import hr.lknezevic.entitygen.analyzer.relation.RelationContext;
 import hr.lknezevic.entitygen.model.Table;
 import hr.lknezevic.entitygen.model.domain.Entity;
 import hr.lknezevic.entitygen.model.domain.Relation;

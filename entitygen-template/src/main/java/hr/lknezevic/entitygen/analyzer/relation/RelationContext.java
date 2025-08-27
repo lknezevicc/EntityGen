@@ -1,5 +1,6 @@
-package hr.lknezevic.entitygen.model;
+package hr.lknezevic.entitygen.analyzer.relation;
 
+import hr.lknezevic.entitygen.model.Table;
 import hr.lknezevic.entitygen.model.domain.Entity;
 import lombok.Data;
 

@@ -11,6 +11,10 @@ import hr.lknezevic.entitygen.filter.SchemaFilterImpl;
  */
 public class MetadataExtractorFactory {
 
+    private MetadataExtractorFactory() {
+        // Private constructor to prevent instantiation
+    }
+
     /**
      * Creates a MetadataExtractor based on the provided database product name.
      * @param userConfig user configuration for schema filtering

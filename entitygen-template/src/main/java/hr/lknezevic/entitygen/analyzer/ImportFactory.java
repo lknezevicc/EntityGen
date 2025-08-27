@@ -8,6 +8,10 @@ import hr.lknezevic.entitygen.template.TemplateProviderObject;
  */
 public class ImportFactory {
 
+    private ImportFactory() {
+        // Private constructor to prevent instantiation
+    }
+
     /**
      * Returns an ImportAnalyzer instance based on the provided component type
      *

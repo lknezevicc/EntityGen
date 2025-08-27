@@ -24,6 +24,10 @@ import java.util.stream.Collectors;
  */
 public class TemplateUtil {
 
+    private TemplateUtil() {
+        // Private constructor to prevent instantiation
+    }
+
     /**
      * Determines if a component should be generated based on its type and user configuration.
      *

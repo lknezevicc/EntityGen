@@ -8,6 +8,10 @@ import java.util.List;
  */
 public class TemplateModelFactory {
 
+    private TemplateModelFactory() {
+        // Private constructor to prevent instantiation
+    }
+
     /**
      * Creates an instance of TemplateModel based on the provided TemplateProviderObject and imports.
      *
